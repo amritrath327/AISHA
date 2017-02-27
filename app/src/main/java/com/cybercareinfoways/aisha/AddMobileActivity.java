@@ -1,5 +1,6 @@
 package com.cybercareinfoways.aisha;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,8 +12,10 @@ import com.cybercareinfoways.helpers.AppConstants;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class AddMobileActivity extends AppCompatActivity {
+    private static final int SELECTCOUNTRYCODE = 12;
     @Bind(R.id.toolbar)
     Toolbar myToolbar;
     @Bind(R.id.et_name)
@@ -31,6 +34,13 @@ public class AddMobileActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         myToolbar.setTitle(AppConstants.REGISTERTITLE);
         setSupportActionBar(myToolbar);
+
+    }
+
+    @OnClick(R.id.btn_country)
+    public void selectCountry() {
+        Intent i = new Intent(AddMobileActivity.this, SelectCountryCodeActivity.class);
+        startActivityForResult(i, SELECTCOUNTRYCODE);
     }
 
     @Override
