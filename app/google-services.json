@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1086355551662",
+    "firebase_url": "https://aisha-a865e.firebaseio.com",
+    "project_id": "aisha-a865e",
+    "storage_bucket": "aisha-a865e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1086355551662:android:9bba202819a59dfb",
+        "android_client_info": {
+          "package_name": "com.cybercareinfoways.aisha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1086355551662-33beca5doktdk3l77tuu6ropb76jnvb2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cybercareinfoways.aisha",
+            "certificate_hash": "288ada1278cf60c6d76b5696bb21c0afff3396a7"
+          }
+        },
+        {
+          "client_id": "1086355551662-8lvijp0bmnqiisjc3p5i0i5tthhesjlu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzP91dfjcqJiWf9L_DqCavLGdDhi4Hm-I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1086355551662-8lvijp0bmnqiisjc3p5i0i5tthhesjlu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
