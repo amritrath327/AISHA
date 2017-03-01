@@ -63,12 +63,15 @@
         android:ems="10"
         android:hint="Enter Name.."
         android:inputType="textPersonName"
+        android:textColor="?attr/colorControlNormal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+
         app:layout_constraintTop_toBottomOf="@+id/iv_app_icon" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/linearLayout"
+        android:layout_width="352dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
@@ -87,8 +90,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="75"
             android:ems="10"
+            android:gravity="center"
             android:hint="CODE"
-            android:inputType="number" />
+            android:inputType="number"
+            android:textColor="?attr/colorControlNormal" />
 
         <EditText
             android:id="@+id/et_mobile"
@@ -97,8 +102,27 @@
             android:layout_weight="25"
             android:ems="10"
             android:hint="Enter Mobile NUmber"
-            android:inputType="phone" />
+            android:inputType="phone"
+            android:textColor="?attr/colorControlNormal" />
 
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/cb_terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_terms"
+        app:layout_constraintRight_toLeftOf="@+id/tv_terms" />
+
+    <TextView
+        android:id="@+id/tv_terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginTop="24dp"
+        android:text="Terms"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 </android.support.constraint.ConstraintLayout>
