@@ -69,6 +69,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(otpReceiver);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.verify_otp, menu);
