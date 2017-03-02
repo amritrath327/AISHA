@@ -62,6 +62,7 @@ public class AddMobileActivity extends AppCompatActivity {
     private boolean isChecked;
     private String code;
     private String phone;
+    private String name;
     private TelephonyManager telephonyManager;
 
     @Override
@@ -151,14 +152,20 @@ public class AddMobileActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.item_next) {
+
             if (isChecked) {
+                name = etName.getText().toString();
                 code = etDailCode.getText().toString();
                 phone = etMobile.getText().toString();
-                if (phone.equals("") && phone.length() < 10) {
+                if (name.length() < 3) {
+                    etName.setError(AppConstants.ENTERNAME);
+                } else if (phone.equals("") && phone.length() < 10) {
+                    etName.setError(null);
                     etMobile.setError(AppConstants.PHOENERROR);
                 } else {
+                    etName.setError(null);
                     etMobile.setError(null);
-                    requestMessagePermission(code, phone);
+                    requestMessagePermission(code, phone, name);
                 }
             } else {
                 Snackbar snackbar = Snackbar.make(etMobile, AppConstants.ACCECPTTERMS, Snackbar.LENGTH_LONG);
@@ -173,7 +180,7 @@ public class AddMobileActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void requestMessagePermission(String code, String mobile) {
+    private void requestMessagePermission(String code, String mobile, String name) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED
@@ -181,10 +188,10 @@ public class AddMobileActivity extends AppCompatActivity {
 
                 requestPermissions(new String[]{android.Manifest.permission.READ_SMS, android.Manifest.permission.RECEIVE_SMS, android.Manifest.permission.SEND_SMS}, MSGREQ);
             } else {
-                showAlertDialog(code, mobile);
+                showAlertDialog(code, mobile, name);
             }
         } else {
-            showAlertDialog(code, mobile);
+            showAlertDialog(code, mobile, name);
         }
     }
 
@@ -192,7 +199,7 @@ public class AddMobileActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MSGREQ) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showAlertDialog(code, phone);
+                showAlertDialog(code, phone, name);
             } else {
                 Toast.makeText(AddMobileActivity.this, "Please Grant messaging permission from App Settings", Toast.LENGTH_SHORT).show();
                 finish();
@@ -200,14 +207,14 @@ public class AddMobileActivity extends AppCompatActivity {
         }
     }
 
-    private void showAlertDialog(final String code, final String phone) {
+    private void showAlertDialog(final String code, final String phone, final String name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AddMobileActivity.this);
         builder.setMessage(AppConstants.CONFIRMDIALOG + "'" + code + phone + "'?");
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                fireIntent(code, phone);
+                fireIntent(code, phone, name);
             }
 
         });
@@ -221,9 +228,10 @@ public class AddMobileActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void fireIntent(String code, String phone) {
+    private void fireIntent(String code, String phone, String name) {
         Intent i = new Intent(AddMobileActivity.this, VerifyOTPActivity.class);
         i.putExtra(AppConstants.MOBILENUMBER, code + phone);
+        i.putExtra(AppConstants.NAME, name);
         startActivity(i);
         finish();
     }
