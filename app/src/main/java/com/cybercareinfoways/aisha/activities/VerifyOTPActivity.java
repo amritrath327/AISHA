@@ -66,7 +66,8 @@ public class VerifyOTPActivity extends AppCompatActivity {
     }
 
     private void generateOtp() {
-
+         Intent intent=new Intent(VerifyOTPActivity.this,MainActivity.class);
+        startActivity(intent);
     }
 
 
