@@ -14,9 +14,129 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/relUserBoard">
+                    <com.cybercareinfoways.helpers.CircleImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:id="@+id/imgSmallUserpic"
+                        android:src="@drawable/ic_add"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/imgSmallUserpic"
+                        android:text="Tanmay"
+                        android:layout_marginLeft="5dp"
+                        android:layout_centerInParent="true"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_exp_arrow"
+                        android:id="@+id/imgArrow"/>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:id="@+id/linUserNAme"
+                    android:visibility="gone">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray"
+                        android:padding="5dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+                        <FrameLayout
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:id="@+id/framePic">
+                            <com.cybercareinfoways.helpers.CircleImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:id="@+id/imgUserPic"
+                                android:src="@drawable/ic_add"/>
+                            <ImageView
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:src="@drawable/ic_edit_pic"
+                                android:layout_gravity="right|bottom"
+                                android:layout_marginRight="15dp"/>
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Username"
+                                android:id="@+id/txtUserNameextt"
+                                android:layout_toRightOf="@+id/imgUserPic"
+                                android:layout_marginTop="15dp"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tanmay"
+                                android:id="@+id/txtUserName"
+                                android:layout_below="@+id/txtUserNameextt"
+                                android:layout_toRightOf="@+id/imgUserPic" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Status"
+                                android:id="@+id/txtUserStatus"
+                                android:layout_below="@+id/txtUserName"
+                                android:layout_toRightOf="@+id/imgUserPic" />
+                        </LinearLayout>
+                        <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:background="@android:color/darker_gray"
+                                android:layout_marginRight="10dp"
+                                android:layout_marginBottom="5dp"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="70dp"
+                                android:layout_height="70dp"
+                                android:background="@drawable/circle_text_bg"
+                                android:text="34"
+                                android:gravity="center"
+                                android:id="@+id/txtCircularContacts"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Contacts"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+<View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="@android:color/darker_gray"/>
+                </LinearLayout>
+            </LinearLayout>
             <ExpandableListView
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="200dp"
                 android:id="@+id/expListView"/>
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,7 +178,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:textSize="15sp"
+                    android:textSize="12sp"
                     android:layout_marginTop="10dp"
                     android:text="Invite them using your favourite social Networks or simply tap on the following list."
                     android:gravity="center"/>
