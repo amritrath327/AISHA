@@ -49,6 +49,9 @@
         <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".activities.VerifyOTPActivity"
+            android:screenOrientation="portrait" />
 
         <receiver android:name=".receivers.OTPMessageReceiver">
             <intent-filter android:priority="9999">

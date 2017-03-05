@@ -1,9 +1,16 @@
 package com.cybercareinfoways.helpers;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
 
 import com.cybercareinfoways.aisha.R;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 
@@ -12,12 +19,47 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by YELOWFLASH on 02/28/2017.
  */
 
 public class AppHelper {
+    public static boolean isConnectingToInternet(Context _context) {
+        ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Network[] networks = connectivity.getAllNetworks();
+            NetworkInfo networkInfo;
+            for (Network mNetwork : networks) {
+                networkInfo = connectivity.getNetworkInfo(mNetwork);
+                if (networkInfo.getState().equals(NetworkInfo.State.CONNECTED)) {
+                    return true;
+                }
+            }
+        } else {
+            if (connectivity != null) {
+                //noinspection deprecation
+                NetworkInfo[] info = connectivity.getAllNetworkInfo();
+                if (info != null) {
+                    for (NetworkInfo anInfo : info) {
+                        if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
+                            Log.d("Network",
+                                    "NETWORKNAME: " + anInfo.getTypeName());
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public static JSONArray readJsonFromRaw(Context context) {
         InputStream inputStream = context.getResources().openRawResource(R.raw.country_code);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -49,6 +91,36 @@ public class AppHelper {
         }
         return null;
     }
+
+    public static WebApi setupRetrofit() {
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(AppConstants.BASEURL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(getSocketTime())
+                .build();
+        return retrofit.create(WebApi.class);
+    }
+
+    public static OkHttpClient getSocketTime() {
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .build();
+
+        return client;
+    }
+
+    public static ProgressDialog showProgressDialog(Context context, String genotpmessage) {
+        ProgressDialog dialog = new ProgressDialog(context);
+        dialog.setTitle(AppConstants.DALOGTITLE);
+        dialog.setMessage(genotpmessage);
+        return dialog;
+    }
+
 
     public static String convertToString(InputStream is) throws IOException {
         BufferedReader r = new BufferedReader(new InputStreamReader(is));

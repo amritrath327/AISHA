@@ -19,9 +19,20 @@ public class AppConstants {
     public static final String NAME = "name";
     public static final String OTP = "otp";
     public static final String OTPINTENTFILTERACTION = "com.cybercare.OTPRESPONSE";
-    public static final String SMS_ORIGIN = "AISHA";
+    public static final String SMS_ORIGIN = "HPASATRK";
     public static final String OTP_DELIMITER = ":";
 
+    public static final String NONETWORK = "No Internet Connection!";
+    public static final String TRYAGAIN = "Try Again";
 
     public static final CharSequence VERIFYOTP = "Verify OTP";
+    public static final String DALOGTITLE = "Please Wait..";
+    public static final String BASEURL = "https://aisha-tracking.herokuapp.com/api/";
+    public static final String GENOTPMESSAGE = "Generating OTP..";
+    public static final int SUCCESS = 1;
+    public static final String WENTWRONG = "Something Went Wrong.";
+    public static final String INCORRECTOTP = "Incorrect OTP";
+    public static final String VERFYOTPMSG = "Verifying OTP";
+    public static final String USERPREFS = "user_prefs";
+    public static final String USERID = "user_id";
 }

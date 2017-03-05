@@ -229,8 +229,9 @@ public class AddMobileActivity extends AppCompatActivity {
     }
 
     private void fireIntent(String code, String phone, String name) {
-        Intent i = new Intent(AddMobileActivity.this, VerifyOTPActivity.class);
-        i.putExtra(AppConstants.MOBILENUMBER, code + phone);
+        Intent i = new Intent(getApplicationContext(), VerifyOTPActivity.class);
+        i.putExtra(AppConstants.COUNTRYCODE, code);
+        i.putExtra(AppConstants.MOBILENUMBER, phone);
         i.putExtra(AppConstants.NAME, name);
         startActivity(i);
         finish();
