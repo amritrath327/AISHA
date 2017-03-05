@@ -19,7 +19,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    repositories {
+        mavenCentral()
+    }
 }
 
 dependencies {
@@ -37,5 +39,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:10.2.0'
     compile 'com.google.firebase:firebase-messaging:10.2.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
 }
 apply plugin: 'com.google.gms.google-services'

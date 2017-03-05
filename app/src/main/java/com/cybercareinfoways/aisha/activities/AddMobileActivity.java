@@ -40,6 +40,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import static android.support.v7.appcompat.R.styleable.Toolbar;
+
 public class AddMobileActivity extends AppCompatActivity {
     private static final int SELECTCOUNTRYCODE = 12;
     private static final int MSGREQ = 32;
@@ -48,7 +50,7 @@ public class AddMobileActivity extends AppCompatActivity {
     @BindView(R.id.et_name)
     EditText etName;
     @BindView(R.id.et_dail_code)
-    EditText etDailCode;
+    EditText etDailCode;  
     @BindView(R.id.et_mobile)
     EditText etMobile;
     @BindView(R.id.btn_country)
