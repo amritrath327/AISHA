@@ -27,7 +27,6 @@ public class AishaConstants {
     public static final String NETWORK_CONNECTION = "Please check Network Connection.";
     public static final String CONNECYION_TIME_OUT = "Connection timeout, please try again.";
     public static final String TRYAGAIN = "Try Again";
-
     public static final CharSequence VERIFYOTP = "Verify OTP";
     public static final String DALOGTITLE = "Please Wait..";
     public static final String BASEURL = "https://aisha-tracking.herokuapp.com/api/";
