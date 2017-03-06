@@ -41,5 +41,6 @@ public class AishaConstants {
     public static final String EXTRA_USERID = "EXTRA_USERID";
 
     public static final String EXTRA_NAME = "EXTRA_NAME";
-    public static final String EXTRA_ERROR = "ERROR";
+    public static final String EXTRA_ERROR = "EXTRA_ERROR";
+    public static final String EXTRA_RESPONSE = "EXTRA_RESPONSE";
 }
