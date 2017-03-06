@@ -7,7 +7,7 @@ package com.cybercareinfoways.aisha.model;
 public class Contacts {
     private  String contactimage;
     private String contactName;
-    private String contactNumber;
+    private String mobile;
 
     public String getContactimage() {
         return contactimage;
@@ -25,11 +25,11 @@ public class Contacts {
         this.contactName = contactName;
     }
 
-    public String getContactNumber() {
-        return contactNumber;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setContactNumber(String contactNumber) {
-        this.contactNumber = contactNumber;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 }

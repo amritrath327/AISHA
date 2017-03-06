@@ -35,7 +35,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     @Override
     public void onBindViewHolder(ContactViewhOlder holder, int position) {
         holder.contactName.setText(cotacList.get(position).getContactName());
-        holder.contactNumber.setText(cotacList.get(position).getContactNumber());
+        holder.contactNumber.setText(cotacList.get(position).getMobile());
     }
 
     @Override

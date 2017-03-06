@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import com.cybercareinfoways.aisha.R;
-import com.cybercareinfoways.helpers.AppConstants;
+import com.cybercareinfoways.helpers.AishaConstants;
 
 public class SplashActivity extends AppCompatActivity {
     Handler handler = new Handler();
@@ -19,7 +19,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (isLogedin()) {
-                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(SplashActivity.this, AddMobileActivity.class);
@@ -32,8 +32,8 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private boolean isLogedin() {
-        String userId = getSharedPreferences(AppConstants.USERPREFS, MODE_PRIVATE)
-                .getString(AppConstants.USERID, "na");
+        String userId = getSharedPreferences(AishaConstants.USERPREFS, MODE_PRIVATE)
+                .getString(AishaConstants.USERID, "na");
         return !userId.equals("na");
     }
 

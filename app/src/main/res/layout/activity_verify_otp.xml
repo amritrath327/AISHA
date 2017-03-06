@@ -4,9 +4,7 @@
     android:layout_height="match_parent"
     android:visibility="visible">
 
-    <include
-        android:id="@+id/toolbar_otp"
-        layout="@layout/toolbar" />
+    <include layout="@layout/toolbar" />
 
     <TextView
         android:id="@+id/tv_otp_instruction"
@@ -14,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/toolbar_otp"
+        android:layout_below="@+id/toolbar"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="@string/otp_instruction"

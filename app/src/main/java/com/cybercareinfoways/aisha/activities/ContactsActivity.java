@@ -1,6 +1,7 @@
 package com.cybercareinfoways.aisha.activities;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
@@ -17,40 +19,51 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.adapters.ContactAdapter;
+import com.cybercareinfoways.aisha.adapters.UserAvailableAdapter;
 import com.cybercareinfoways.aisha.model.Contacts;
+import com.cybercareinfoways.aisha.model.UserData;
+import com.cybercareinfoways.aisha.model.UserRequest;
+import com.cybercareinfoways.aisha.model.UserResponse;
+import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.TextDrawable;
+import com.cybercareinfoways.helpers.WebApi;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.AppInviteDialog;
-import com.facebook.share.widget.MessageDialog;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.List;
 
 import bolts.AppLinks;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-import static android.R.id.content;
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
     private static final int READCONTACT_CODE = 201;
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_REQUEST = 1;
@@ -60,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     private ContactAdapter contactAdapter;
-    private ArrayList<Contacts> cotactList;
+    private ArrayList<Contacts> cotactList,contactsDataList;
+    private ArrayList<UserData> userAvilableList;
     @BindView(R.id.rcvContacts)
     RecyclerView rcvContacts;
     @BindView(R.id.imgWhastapp)
@@ -84,11 +98,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String appLinkUrl;
     @BindView(R.id.framePic)
     FrameLayout framePic;
+    @BindView(R.id.txtUserName)
+    TextView txtUserName;
+    @BindView(R.id.txtSmallUsername)
+    TextView txtSmallUsername;
+    private String userName;
+    @BindView(R.id.rcvAvailableUsers)
+    RecyclerView rcvAvailableUsers;
+    private Call<UserResponse> userResponseCall;
+    private WebApi webApi;
+    private String userId;
+    private UserAvailableAdapter userAvailableAdapter;
+    ProgressDialog dilogAvailableUser;
+
     //https://fb.me/674228709423325
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_contacts);
         FacebookSdk.sdkInitialize(getApplicationContext());
         Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
         if (targetUrl != null) {
@@ -98,7 +125,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("AISHA");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         rcvContacts.setLayoutManager(new GridLayoutManager(this,3));
+        cotactList = new ArrayList();
+        contactsDataList=new ArrayList<>();
+        rcvAvailableUsers.setLayoutManager(new LinearLayoutManager(ContactsActivity.this));
+        rcvAvailableUsers.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+        userId=AishaUtilities.getSharedPreffUserid(ContactsActivity.this);
+        webApi=AishaUtilities.setupRetrofit();
+        userAvilableList = new ArrayList<>();
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
             if (AishaUtilities.checkPermission(Manifest.permission.READ_CONTACTS, this)) {
                 getAllContacts();
@@ -112,11 +147,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imgFacebook.setOnClickListener(this);
         imgMore.setOnClickListener(this);
         relUserBoard.setOnClickListener(this);
-        TextDrawable textDrawable=new TextDrawable("Tanmay",AishaUtilities.dpToPx(MainActivity.this,30));
+        framePic.setOnClickListener(this);
+        userName = AishaUtilities.getSharedPreffName(ContactsActivity.this);
+        TextDrawable textDrawable=new TextDrawable(userName,AishaUtilities.dpToPx(ContactsActivity.this,30));
         imgSmallUserpic.setImageDrawable(textDrawable);
         imgUserPic.setImageDrawable(textDrawable);
-        framePic.setOnClickListener(this);
-
+        txtSmallUsername.setText(userName);
+        txtUserName.setText(userName);
     }
 
     @Override
@@ -134,49 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getAllContacts() {
-        cotactList = new ArrayList();
-        Contacts contacts;
-
-        ContentResolver contentResolver = getContentResolver();
-        Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
-        if (cursor.getCount() > 0) {
-            while (cursor.moveToNext()) {
-
-                int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
-                if (hasPhoneNumber > 0) {
-                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-
-                    contacts = new Contacts();
-                    contacts.setContactName(name);
-
-                    Cursor phoneCursor = contentResolver.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id},
-                            null);
-                    if (phoneCursor.moveToNext()) {
-                        String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        contacts.setContactNumber(phoneNumber);
-                    }
-
-                    phoneCursor.close();
-
-                    Cursor emailCursor = contentResolver.query(
-                            ContactsContract.CommonDataKinds.Email.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-                    while (emailCursor.moveToNext()) {
-                        String emailId = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-                    }
-                    cotactList.add(contacts);
-                }
-            }
-        }
-        contactAdapter = new ContactAdapter(MainActivity.this,cotactList);
-        rcvContacts.setAdapter(contactAdapter);
+        new ContactTask(ContactsActivity.this).execute();
     }
 
     @Override
@@ -190,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (sendIntent.resolveActivity(getPackageManager())!= null){
                 startActivity(sendIntent);
             }else {
-                Toast.makeText(MainActivity.this,"Your device don't have Whastsapp.",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ContactsActivity.this,"Your device don't have Whastsapp.",Toast.LENGTH_SHORT).show();
             }
         }
         if (v.getId()==R.id.imgFacebook){
@@ -242,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
     private void startDilog() {
-        AlertDialog.Builder myAlertDilog = new AlertDialog.Builder(MainActivity.this);
+        AlertDialog.Builder myAlertDilog = new AlertDialog.Builder(ContactsActivity.this);
         myAlertDilog.setTitle("Upload picture option..");
         myAlertDilog.setMessage("Where to upload picture????");
         myAlertDilog.setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
@@ -258,10 +253,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-                    if(AishaUtilities.checkPermission(Manifest.permission.CAMERA,MainActivity.this)){
+                    if(AishaUtilities.checkPermission(Manifest.permission.CAMERA,ContactsActivity.this)){
                         openCameraApp();
                     }else{
-                        AishaUtilities.requestPermission(MainActivity.this,new String[]{Manifest.permission.CAMERA},REQUEST_ACESS_CAMERA);
+                        AishaUtilities.requestPermission(ContactsActivity.this,new String[]{Manifest.permission.CAMERA},REQUEST_ACESS_CAMERA);
                     }
                 }else{
                     openCameraApp();
@@ -309,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (resultCode == RESULT_OK) {
                 if (data.hasExtra("data")) {
                     Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                    uri = getImageUri(MainActivity.this, bitmap);
+                    uri = getImageUri(ContactsActivity.this, bitmap);
                     File finalFile = new File(getRealPathFromUri(uri));
                     imgUserPic.setImageBitmap(bitmap);
                     imgSmallUserpic.setImageBitmap(bitmap);
@@ -346,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    private Uri getImageUri(MainActivity mainActivity, Bitmap bitmap) {
+    private Uri getImageUri(ContactsActivity mainActivity, Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         String path = MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), bitmap, "Title", null);
@@ -373,5 +368,144 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
         return inSampleSize;
+    }
+    public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>> {
+        private WeakReference<ContactsActivity> contactsActivityWeakReference;
+        public ContactTask(ContactsActivity contactsActivity){
+            contactsActivityWeakReference = new WeakReference<ContactsActivity>(contactsActivity);
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dilogAvailableUser = new ProgressDialog(ContactsActivity.this);
+            dilogAvailableUser.setMessage("Please wait...Showing Your Contacts in AISHA");
+            dilogAvailableUser.setCanceledOnTouchOutside(false);
+            dilogAvailableUser.show();
+        }
+
+        @Override
+        protected ArrayList<Contacts> doInBackground(Void... params) {
+            Contacts contacts;
+            ContentResolver contentResolver = getContentResolver();
+            Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+            if (cursor.getCount() > 0) {
+                while (cursor.moveToNext()) {
+
+                    int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
+                    if (hasPhoneNumber > 0) {
+                        String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                        String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+
+                        contacts = new Contacts();
+                        contacts.setContactName(name);
+
+                        Cursor phoneCursor = contentResolver.query(
+                                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{id},
+                                null);
+                        if (phoneCursor.moveToNext()) {
+                            String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            contacts.setMobile(phoneNumber);
+                        }
+
+                        phoneCursor.close();
+
+                        Cursor emailCursor = contentResolver.query(
+                                ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
+                                new String[]{id}, null);
+                        while (emailCursor.moveToNext()) {
+                            String emailId = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                        }
+                        cotactList.add(contacts);
+                    }
+                }
+            }
+            return cotactList.size()>0?cotactList:null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Contacts> contactses) {
+            super.onPostExecute(contactses);
+            if (contactsActivityWeakReference.get()!=null) {
+                if (contactses != null && contactses.size() > 0) {
+                    contactAdapter = new ContactAdapter(ContactsActivity.this, contactses);
+                    rcvContacts.setAdapter(contactAdapter);
+                    contactsDataList.addAll(contactses);
+                    if (AishaUtilities.isConnectingToInternet(ContactsActivity.this)) {
+                        showAvailableContacts();
+                    }
+                }
+            }
+        }
+    }
+    private void showAvailableContacts() {
+        UserRequest userRequest=new UserRequest();
+        userRequest.setUser_id(userId);
+        //for (int i=0;i<contactDataList.size();i++){
+        Contacts contacts=new Contacts();
+        //contacts.setMobile(contactDataList.get(i).getMobile());
+        contacts.setMobile("9668452233");
+        contactsDataList.add(contacts);
+        //}
+        userRequest.setContacts(contactsDataList);
+        userResponseCall = webApi.getAvailableUser(userRequest);
+        userResponseCall.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (dilogAvailableUser.isShowing()){
+                    dilogAvailableUser.dismiss();
+                }
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()==1){
+                        userAvilableList.addAll(response.body().getContacts());
+                        if (userAvilableList!=null && userAvilableList.size()>0){
+                            userAvailableAdapter  = new UserAvailableAdapter(ContactsActivity.this,userAvilableList);
+                            rcvAvailableUsers.setAdapter(userAvailableAdapter);
+                        }else {
+                            Toast.makeText(ContactsActivity.this,"No AISHA contacts found.",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }else {
+                    Toast.makeText(ContactsActivity.this,"Please try agaiin",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                if (dilogAvailableUser.isShowing()){
+                    dilogAvailableUser.dismiss();
+                }
+                if (t instanceof SocketTimeoutException){
+                    Toast.makeText(ContactsActivity.this, AishaConstants.CONNECYION_TIME_OUT,Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.v(AishaConstants.EXTRA_ERROR,t.getMessage());
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        if (dilogAvailableUser!=null || dilogAvailableUser.isShowing()){
+            dilogAvailableUser.cancel();
+        }
+        if (userResponseCall!=null){
+            userResponseCall.cancel();
+        }
+        super.onStop();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId()==android.R.id.home){
+            finish();
+            return true;
+        }
+        return false;
     }
 }

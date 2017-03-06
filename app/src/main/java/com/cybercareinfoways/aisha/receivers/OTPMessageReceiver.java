@@ -9,7 +9,7 @@ import android.telephony.SmsMessage;
 import android.util.Log;
 
 import com.cybercareinfoways.aisha.services.VerifyOTPService;
-import com.cybercareinfoways.helpers.AppConstants;
+import com.cybercareinfoways.helpers.AishaConstants;
 
 /**
  * Created by YELOWFLASH on 03/02/2017.
@@ -34,7 +34,7 @@ public class OTPMessageReceiver extends BroadcastReceiver {
             if (smsMessage != null) {
                 String senderAddress = smsMessage.getDisplayOriginatingAddress();
                 String message = smsMessage.getDisplayMessageBody();
-                if (!senderAddress.toLowerCase().contains(AppConstants.SMS_ORIGIN.toLowerCase())) {
+                if (!senderAddress.toLowerCase().contains(AishaConstants.SMS_ORIGIN.toLowerCase())) {
                     Log.e(TAG, "SMS is not for our app!");
                     return;
                 }
@@ -45,7 +45,7 @@ public class OTPMessageReceiver extends BroadcastReceiver {
                 Log.e(TAG, "OTP received: " + verificationCode);
 
                 Intent hhtpIntent = new Intent(context, VerifyOTPService.class);
-                hhtpIntent.putExtra(AppConstants.OTP, verificationCode);
+                hhtpIntent.putExtra(AishaConstants.OTP, verificationCode);
                 context.startService(hhtpIntent);
             }
         }
@@ -53,7 +53,7 @@ public class OTPMessageReceiver extends BroadcastReceiver {
 
     private String getVerificationCode(String message) {
         String code = null;
-        int index = message.indexOf(AppConstants.OTP_DELIMITER);
+        int index = message.indexOf(AishaConstants.OTP_DELIMITER);
 
         if (index != -1) {
             int start = index + 1;

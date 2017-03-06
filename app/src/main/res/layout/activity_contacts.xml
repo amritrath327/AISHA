@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.cybercareinfoways.aisha.activities.MainActivity">
+    tools:context="com.cybercareinfoways.aisha.activities.ContactsActivity">
 <include layout="@layout/toolbar"/>
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -29,6 +29,7 @@
                         android:id="@+id/imgSmallUserpic"
                         android:src="@drawable/ic_add"/>
                     <TextView
+                        android:id="@+id/txtSmallUsername"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toRightOf="@+id/imgSmallUserpic"
@@ -134,10 +135,10 @@
     android:background="@android:color/darker_gray"/>
                 </LinearLayout>
             </LinearLayout>
-            <ExpandableListView
+            <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:id="@+id/expListView"/>
+                android:layout_height="wrap_content"
+                android:id="@+id/rcvAvailableUsers"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="160dp"

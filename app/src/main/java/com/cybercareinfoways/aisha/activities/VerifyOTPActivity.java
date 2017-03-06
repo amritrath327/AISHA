@@ -24,13 +24,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
-import com.cybercareinfoways.helpers.AppConstants;
-import com.cybercareinfoways.helpers.AppHelper;
+import com.cybercareinfoways.helpers.AishaConstants;
+import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.WebApi;
 import com.cybercareinfoways.webapihelpers.GenOtpRequest;
 import com.cybercareinfoways.webapihelpers.GenOtpResponse;
 import com.cybercareinfoways.webapihelpers.VerifyOtpRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpResponse;
+
+import java.net.SocketTimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,7 +44,7 @@ import retrofit2.Response;
  * Created by YELOWFLASH on 02/28/2017.
  */
 public class VerifyOTPActivity extends AppCompatActivity {
-    @BindView(R.id.toolbar_otp)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_otp_instruction)
     TextView tvOtpInstr;
@@ -70,13 +72,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle b = getIntent().getExtras();
-        name = b.getString(AppConstants.NAME);
-        code = b.getString(AppConstants.COUNTRYCODE);
-        mobile = b.getString(AppConstants.MOBILENUMBER);
+        name = b.getString(AishaConstants.NAME);
+        code = b.getString(AishaConstants.COUNTRYCODE);
+        mobile = b.getString(AishaConstants.MOBILENUMBER);
         setContentView(R.layout.activity_verify_otp);
         iim = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         ButterKnife.bind(this);
-        toolbar.setTitle(AppConstants.VERIFYOTP);
+        toolbar.setTitle(AishaConstants.VERIFYOTP);
         setSupportActionBar(toolbar);
 
         tvOtpInstr.setText("Hi, " + name + ". Your One-Time-Password has been sent to " + code + mobile + ".");
@@ -90,11 +92,11 @@ public class VerifyOTPActivity extends AppCompatActivity {
 
 
     private void generateOtp() {
-        if (AppHelper.isConnectingToInternet(VerifyOTPActivity.this)) {
-            dialog = AppHelper.showProgressDialog(VerifyOTPActivity.this, AppConstants.GENOTPMESSAGE);
+        if (AishaUtilities.isConnectingToInternet(VerifyOTPActivity.this)) {
+            dialog = AishaUtilities.showProgressDialog(VerifyOTPActivity.this, AishaConstants.GENOTPMESSAGE);
             dialog.show();
             //setup retrofit
-            WebApi api = AppHelper.setupRetrofit();
+            WebApi api = AishaUtilities.setupRetrofit();
             final GenOtpRequest request = new GenOtpRequest(mobile, code, name);
             Log.i("data", request.toString());
             genOtpResponseCall = api.getGenOtpResponseCall(request);
@@ -105,12 +107,12 @@ public class VerifyOTPActivity extends AppCompatActivity {
                         int status = response.body().getStatus();
                         Log.i("status", response.body().getUser_id());
                         dialog.dismiss();
-                        if (status == AppConstants.SUCCESS) {
+                        if (status == AishaConstants.SUCCESS) {
                             userId = response.body().getUser_id();
                             updateUiForResend(false);
                         } else {
-                            Snackbar snackbar = Snackbar.make(etOtp, AppConstants.WENTWRONG, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction(AppConstants.TRYAGAIN, new View.OnClickListener() {
+                            Snackbar snackbar = Snackbar.make(etOtp, AishaConstants.WENTWRONG, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction(AishaConstants.TRYAGAIN, new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
                                             generateOtp();
@@ -134,8 +136,8 @@ public class VerifyOTPActivity extends AppCompatActivity {
                 }
             });
         } else {
-            Snackbar snackbar = Snackbar.make(etOtp, AppConstants.NONETWORK, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(AppConstants.TRYAGAIN, new View.OnClickListener() {
+            Snackbar snackbar = Snackbar.make(etOtp, AishaConstants.NETWORK_CONNECTION, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(AishaConstants.TRYAGAIN, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             generateOtp();
@@ -205,8 +207,8 @@ public class VerifyOTPActivity extends AppCompatActivity {
     }
 
     private void showOTPError() {
-        Snackbar snackbar = Snackbar.make(etOtp, AppConstants.INCORRECTOTP, Snackbar.LENGTH_INDEFINITE)
-                .setAction(AppConstants.TRYAGAIN, new View.OnClickListener() {
+        Snackbar snackbar = Snackbar.make(etOtp, AishaConstants.INCORRECTOTP, Snackbar.LENGTH_INDEFINITE)
+                .setAction(AishaConstants.TRYAGAIN, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         generateOtp();
@@ -221,12 +223,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
     }
 
     private void verifyOTP(String otp) {
-        if (AppHelper.isConnectingToInternet(VerifyOTPActivity.this)) {
-            dialog = AppHelper.showProgressDialog(VerifyOTPActivity.this, AppConstants.VERFYOTPMSG);
+        if (AishaUtilities.isConnectingToInternet(VerifyOTPActivity.this)) {
+            dialog = AishaUtilities.showProgressDialog(VerifyOTPActivity.this, AishaConstants.VERFYOTPMSG);
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
             showMenu = false;
             invalidateOptionsMenu();
-            WebApi api = AppHelper.setupRetrofit();
+            WebApi api = AishaUtilities.setupRetrofit();
             VerifyOtpRequest request = new VerifyOtpRequest(userId, otp);
             getVerifyOtpResponseCall = api.getVerifyOtpResponseCall(request);
             getVerifyOtpResponseCall.enqueue(new Callback<VerifyOtpResponse>() {
@@ -240,7 +243,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                         int status = response.body().getStatus();
                         int verified = response.body().getVerified();
 
-                        if (status == AppConstants.SUCCESS && verified == AppConstants.SUCCESS) {
+                        if (status == AishaConstants.SUCCESS && verified == AishaConstants.SUCCESS) {
 
                             saveUserIdAndGoHome(response.body().getUser_id());
 
@@ -254,7 +257,11 @@ public class VerifyOTPActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call<VerifyOtpResponse> call, Throwable t) {
                     dialog.dismiss();
-                    Log.e("Error", t.getLocalizedMessage());
+                    if (t instanceof SocketTimeoutException){
+                        Toast.makeText(VerifyOTPActivity.this,AishaConstants.CONNECYION_TIME_OUT,Toast.LENGTH_SHORT).show();
+                    }else {
+                        Log.e("Error", t.getLocalizedMessage());
+                    }
                     showMenu = true;
                     invalidateOptionsMenu();
                 }
@@ -262,8 +269,8 @@ public class VerifyOTPActivity extends AppCompatActivity {
         } else
 
         {
-            Snackbar snackbar = Snackbar.make(etOtp, AppConstants.NONETWORK, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(AppConstants.TRYAGAIN, new View.OnClickListener() {
+            Snackbar snackbar = Snackbar.make(etOtp, AishaConstants.NETWORK_CONNECTION, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(AishaConstants.TRYAGAIN, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (etOtp.getText().toString().trim().length() == 6 && !userId.equals(""))
@@ -284,12 +291,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
     }
 
     private void saveUserIdAndGoHome(String user_id) {
-        SharedPreferences shr = getSharedPreferences(AppConstants.USERPREFS, MODE_PRIVATE);
+        SharedPreferences shr = getSharedPreferences(AishaConstants.USERPREFS, MODE_PRIVATE);
         SharedPreferences.Editor e = shr.edit();
-        e.putString(AppConstants.USERID, user_id);
+        e.putString(AishaConstants.USERID, user_id);
         e.apply();
+        AishaUtilities.setSharedPreffUserID(VerifyOTPActivity.this,user_id);
 
-        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         finish();
@@ -302,11 +310,11 @@ public class VerifyOTPActivity extends AppCompatActivity {
     }
 
     public class OTPReceiver extends BroadcastReceiver {
-        public final static String ACTION = AppConstants.OTPINTENTFILTERACTION;
+        public final static String ACTION = AishaConstants.OTPINTENTFILTERACTION;
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            String otp = intent.getExtras().getString(AppConstants.OTP);
+            String otp = intent.getExtras().getString(AishaConstants.OTP);
             Log.i("OTP", otp);
             if (!userId.equals(""))
                 verifyOTP(otp);

@@ -4,7 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 
 import com.cybercareinfoways.aisha.activities.VerifyOTPActivity;
-import com.cybercareinfoways.helpers.AppConstants;
+import com.cybercareinfoways.helpers.AishaConstants;
 
 /**
  * Created by YELOWFLASH on 03/02/2017.
@@ -21,11 +21,11 @@ public class VerifyOTPService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            String otp = intent.getExtras().getString(AppConstants.OTP);
+            String otp = intent.getExtras().getString(AishaConstants.OTP);
             Intent broadcastIntent = new Intent();
             broadcastIntent.setAction(VerifyOTPActivity.OTPReceiver.ACTION);
             broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
-            broadcastIntent.putExtra(AppConstants.OTP, otp);
+            broadcastIntent.putExtra(AishaConstants.OTP, otp);
 //            broadcastIntent.putExtra(RESPONSE_MESSAGE, responseMessage);
             sendBroadcast(broadcastIntent);
             stopSelf();

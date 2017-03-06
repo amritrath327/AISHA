@@ -28,8 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
-import com.cybercareinfoways.helpers.AppConstants;
-import com.cybercareinfoways.helpers.AppHelper;
+import com.cybercareinfoways.helpers.AishaConstants;
+import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.Country;
 
 import org.json.JSONArray;
@@ -39,8 +39,6 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static android.support.v7.appcompat.R.styleable.Toolbar;
 
 public class AddMobileActivity extends AppCompatActivity {
     private static final int SELECTCOUNTRYCODE = 12;
@@ -74,14 +72,14 @@ public class AddMobileActivity extends AppCompatActivity {
         iim = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         setContentView(R.layout.activity_add_mobile);
         ButterKnife.bind(this);
-        myToolbar.setTitle(AppConstants.REGISTERTITLE);
+        myToolbar.setTitle(AishaConstants.REGISTERTITLE);
         setSupportActionBar(myToolbar);
         tvTerms.setClickable(true);
         tvTerms.setMovementMethod(LinkMovementMethod.getInstance());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            tvTerms.setText(Html.fromHtml(AppConstants.TERMS, Html.FROM_HTML_MODE_COMPACT));
+            tvTerms.setText(Html.fromHtml(AishaConstants.TERMS, Html.FROM_HTML_MODE_COMPACT));
         } else {
-            tvTerms.setText(Html.fromHtml(AppConstants.TERMS));
+            tvTerms.setText(Html.fromHtml(AishaConstants.TERMS));
         }
 
         etDailCode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -103,7 +101,7 @@ public class AddMobileActivity extends AppCompatActivity {
         if (telephonyManager.getSimState() != TelephonyManager.SIM_STATE_ABSENT || telephonyManager.getSimState() != TelephonyManager.SIM_STATE_UNKNOWN) {
             String countryId = telephonyManager.getSimCountryIso().toUpperCase();
             Log.i("countryid", countryId);
-            JSONArray json = AppHelper.readJsonFromRaw(AddMobileActivity.this);
+            JSONArray json = AishaUtilities.readJsonFromRaw(AddMobileActivity.this);
             Country c = getCoutry(json, countryId);
 
             if (c != null) {
@@ -124,7 +122,7 @@ public class AddMobileActivity extends AppCompatActivity {
             for (int i = 0; i < json.length(); i++) {
                 JSONObject object = json.getJSONObject(i);
                 if (object.getString("code").equals(countryId)) {
-                    Country c = new Country(object.getString(AppConstants.COUNTRYNAME), object.getString(AppConstants.COUNTRYCODE));
+                    Country c = new Country(object.getString(AishaConstants.COUNTRYNAME), object.getString(AishaConstants.COUNTRYCODE));
                     return c;
                 }
             }
@@ -160,17 +158,17 @@ public class AddMobileActivity extends AppCompatActivity {
                 code = etDailCode.getText().toString();
                 phone = etMobile.getText().toString();
                 if (name.length() < 3) {
-                    etName.setError(AppConstants.ENTERNAME);
+                    etName.setError(AishaConstants.ENTERNAME);
                 } else if (phone.equals("") && phone.length() < 10) {
                     etName.setError(null);
-                    etMobile.setError(AppConstants.PHOENERROR);
+                    etMobile.setError(AishaConstants.PHOENERROR);
                 } else {
                     etName.setError(null);
                     etMobile.setError(null);
                     requestMessagePermission(code, phone, name);
                 }
             } else {
-                Snackbar snackbar = Snackbar.make(etMobile, AppConstants.ACCECPTTERMS, Snackbar.LENGTH_LONG);
+                Snackbar snackbar = Snackbar.make(etMobile, AishaConstants.ACCECPTTERMS, Snackbar.LENGTH_LONG);
                 snackbar.setActionTextColor(Color.RED);
                 // Changing action button text color
                 View sbView = snackbar.getView();
@@ -211,7 +209,7 @@ public class AddMobileActivity extends AppCompatActivity {
 
     private void showAlertDialog(final String code, final String phone, final String name) {
         AlertDialog.Builder builder = new AlertDialog.Builder(AddMobileActivity.this);
-        builder.setMessage(AppConstants.CONFIRMDIALOG + "'" + code + phone + "'?");
+        builder.setMessage(AishaConstants.CONFIRMDIALOG + "'" + code + phone + "'?");
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -231,10 +229,11 @@ public class AddMobileActivity extends AppCompatActivity {
     }
 
     private void fireIntent(String code, String phone, String name) {
+        AishaUtilities.setSharedPreffUserNAme(AddMobileActivity.this,name);
         Intent i = new Intent(getApplicationContext(), VerifyOTPActivity.class);
-        i.putExtra(AppConstants.COUNTRYCODE, code);
-        i.putExtra(AppConstants.MOBILENUMBER, phone);
-        i.putExtra(AppConstants.NAME, name);
+        i.putExtra(AishaConstants.COUNTRYCODE, code);
+        i.putExtra(AishaConstants.MOBILENUMBER, phone);
+        i.putExtra(AishaConstants.NAME, name);
         startActivity(i);
         finish();
     }
@@ -243,8 +242,8 @@ public class AddMobileActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SELECTCOUNTRYCODE && resultCode == RESULT_OK) {
-            String countryCode = data.getExtras().getString(AppConstants.COUNTRYCODE);
-            String countryname = data.getExtras().getString(AppConstants.COUNTRYNAME);
+            String countryCode = data.getExtras().getString(AishaConstants.COUNTRYCODE);
+            String countryname = data.getExtras().getString(AishaConstants.COUNTRYNAME);
             etDailCode.setText(countryCode);
             btnCountry.setText(countryname);
             etMobile.requestFocus();

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_new_contacts"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.cybercareinfoways.aisha.activities.NewContactsActivity">
+    <include layout="@layout/toolbar"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rcvAvailableUsers"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No Contact Found"
+            android:gravity="center"
+            android:textColor="@color/colorPrimary"
+            android:textAllCaps="true"
+            android:textStyle="bold|italic"
+            android:textSize="20sp"
+            android:id="@+id/txtNocontact"
+            android:visibility="gone"/>
+    </FrameLayout>
+</LinearLayout>

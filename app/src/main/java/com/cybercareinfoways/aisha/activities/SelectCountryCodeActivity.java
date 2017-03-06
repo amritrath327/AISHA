@@ -12,10 +12,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.cybercareinfoways.adapters.CountryAdapter;
+import com.cybercareinfoways.aisha.adapters.CountryAdapter;
 import com.cybercareinfoways.aisha.R;
-import com.cybercareinfoways.helpers.AppConstants;
-import com.cybercareinfoways.helpers.AppHelper;
+import com.cybercareinfoways.helpers.AishaConstants;
+import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.Country;
 
 import org.json.JSONArray;
@@ -48,7 +48,7 @@ public class SelectCountryCodeActivity extends AppCompatActivity implements Sear
         setSupportActionBar(toolbar);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rvCountry.setLayoutManager(llm);
-        JSONArray json = AppHelper.readJsonFromRaw(SelectCountryCodeActivity.this);
+        JSONArray json = AishaUtilities.readJsonFromRaw(SelectCountryCodeActivity.this);
         list = getListFromJson(json);
 
         adapter = new CountryAdapter(SelectCountryCodeActivity.this, list);
@@ -60,7 +60,7 @@ public class SelectCountryCodeActivity extends AppCompatActivity implements Sear
         try {
             for (int i = 0; i < json.length(); i++) {
                 JSONObject countryObject = json.getJSONObject(i);
-                Country c = new Country(countryObject.getString(AppConstants.COUNTRYNAME), countryObject.getString(AppConstants.COUNTRYCODE));
+                Country c = new Country(countryObject.getString(AishaConstants.COUNTRYNAME), countryObject.getString(AishaConstants.COUNTRYCODE));
 
                 list.add(c);
             }
@@ -111,8 +111,8 @@ public class SelectCountryCodeActivity extends AppCompatActivity implements Sear
     public void foundCountry(String code, String name) {
         Intent i = new Intent();
         Bundle b = new Bundle();
-        b.putString(AppConstants.COUNTRYCODE, code);
-        b.putString(AppConstants.COUNTRYNAME, name);
+        b.putString(AishaConstants.COUNTRYCODE, code);
+        b.putString(AishaConstants.COUNTRYNAME, name);
         i.putExtras(b);
         setResult(RESULT_OK, i);
         finish();
