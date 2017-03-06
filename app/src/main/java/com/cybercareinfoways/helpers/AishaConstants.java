@@ -23,7 +23,6 @@ public class AishaConstants {
     public static final String OTPINTENTFILTERACTION = "com.cybercare.OTPRESPONSE";
     public static final String SMS_ORIGIN = "HPASATRK";
     public static final String OTP_DELIMITER = ":";
-
     public static final String NETWORK_CONNECTION = "Please check Network Connection.";
     public static final String CONNECYION_TIME_OUT = "Connection timeout, please try again.";
     public static final String TRYAGAIN = "Try Again";
