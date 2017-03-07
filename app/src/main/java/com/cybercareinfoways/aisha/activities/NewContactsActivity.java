@@ -81,13 +81,15 @@ public class NewContactsActivity extends AppCompatActivity {
     private void showAvailableContacts() {
         UserRequest userRequest=new UserRequest();
         userRequest.setUser_id(userId);
-        //for (int i=0;i<contactDataList.size();i++){
-            Contacts contacts=new Contacts();
-            //contacts.setMobile(contactDataList.get(i).getMobile());
-             contacts.setMobile("9668452233");
-            contactDataList.add(contacts);
+        ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
+        for (int i=0;i<contactDataList.size();i++) {
+            Contacts contacts = new Contacts();
+            //contacts.setMobile("9668452233");
+            contacts.setMobile(contactDataList.get(i).getMobile());
+            contactses.add(contacts);
+        }
         //}
-        userRequest.setContacts(contactDataList);
+        userRequest.setContacts(contactses);
         userResponseCall = webApi.getAvailableUser(userRequest);
         userResponseCall.enqueue(new Callback<UserResponse>() {
             @Override
@@ -155,9 +157,8 @@ public class NewContactsActivity extends AppCompatActivity {
             Contacts contacts;
             ContentResolver contentResolver = getContentResolver();
             Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
-            if (cursor.getCount() > 0) {
+            if (cursor!=null && cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
-
                     int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
                     if (hasPhoneNumber > 0) {
                         String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
@@ -172,20 +173,28 @@ public class NewContactsActivity extends AppCompatActivity {
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                                 new String[]{id},
                                 null);
-                        if (phoneCursor.moveToNext()) {
-                            String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                            contacts.setMobile(phoneNumber);
+                        if (phoneCursor!=null && phoneCursor.getCount()>0) {
+                            if (phoneCursor.moveToNext()) {
+                                String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                contacts.setMobile(phoneNumber);
+                            }
                         }
-
-                        phoneCursor.close();
+                        if (phoneCursor!=null) {
+                            phoneCursor.close();
+                        }
 
                         Cursor emailCursor = contentResolver.query(
                                 ContactsContract.CommonDataKinds.Email.CONTENT_URI,
                                 null,
                                 ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
                                 new String[]{id}, null);
-                        while (emailCursor.moveToNext()) {
-                            String emailId = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                        if (emailCursor!=null && emailCursor.getCount()>0) {
+                            while (emailCursor.moveToNext()) {
+                                String emailId = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+                            }
+                        }
+                        if (emailCursor!=null){
+                            emailCursor.close();
                         }
                         cotactList.add(contacts);
                     }
