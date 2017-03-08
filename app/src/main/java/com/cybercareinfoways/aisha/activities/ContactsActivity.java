@@ -105,6 +105,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     private String userName;
     @BindView(R.id.rcvAvailableUsers)
     RecyclerView rcvAvailableUsers;
+    @BindView(R.id.txtCircularContacts)
+    TextView txtCircularContacts;
     private Call<UserResponse> userResponseCall;
     private WebApi webApi;
     private String userId;
@@ -487,15 +489,18 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                 }
                 if (response.isSuccessful()){
                     if (response.body().getStatus()==1){
+                        txtCircularContacts.setText(""+response.body().getContacts().size());
                         userAvilableList.addAll(response.body().getContacts());
                         if (userAvilableList!=null && userAvilableList.size()>0){
                             userAvailableAdapter  = new UserAvailableAdapter(ContactsActivity.this,userAvilableList);
                             rcvAvailableUsers.setAdapter(userAvailableAdapter);
                         }else {
                             Toast.makeText(ContactsActivity.this,"No AISHA contacts found.",Toast.LENGTH_SHORT).show();
+                            txtCircularContacts.setText("0");
                         }
                     }else {
                         Toast.makeText(ContactsActivity.this,"No AISHA contacts found.",Toast.LENGTH_SHORT).show();
+                        txtCircularContacts.setText("0");
                     }
                 }else {
                     Toast.makeText(ContactsActivity.this,"Please try agaiin",Toast.LENGTH_SHORT).show();
