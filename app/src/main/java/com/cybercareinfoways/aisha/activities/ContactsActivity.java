@@ -369,6 +369,23 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         }
         return inSampleSize;
     }
+
+    public String getNameFromNumber(String mobile) {
+         String contactName = null;
+        ContentResolver cr = getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(mobile));
+        Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+
+        if(cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        if(cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return contactName;
+    }
+
     public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>> {
         private WeakReference<ContactsActivity> contactsActivityWeakReference;
         public ContactTask(ContactsActivity contactsActivity){
@@ -456,7 +473,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         for (int i=0;i<contactsDataList.size();i++) {
             Contacts contacts = new Contacts();
             //contacts.setMobile("9668452233");
-            contacts.setMobile(contactsDataList.get(i).getMobile());
+            contacts.setMobile(contactsDataList.get(i).getMobile().substring(contactsDataList.get(i).getMobile().length()-10).toString());
             contactses.add(contacts);
         }
         //}
@@ -477,6 +494,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                         }else {
                             Toast.makeText(ContactsActivity.this,"No AISHA contacts found.",Toast.LENGTH_SHORT).show();
                         }
+                    }else {
+                        Toast.makeText(ContactsActivity.this,"No AISHA contacts found.",Toast.LENGTH_SHORT).show();
                     }
                 }else {
                     Toast.makeText(ContactsActivity.this,"Please try agaiin",Toast.LENGTH_SHORT).show();

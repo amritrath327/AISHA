@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -85,7 +86,7 @@ public class NewContactsActivity extends AppCompatActivity {
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
             //contacts.setMobile("9668452233");
-            contacts.setMobile(contactDataList.get(i).getMobile());
+            contacts.setMobile(contactDataList.get(i).getMobile().substring(contactDataList.get(i).getMobile().length()-10));
             contactses.add(contacts);
         }
         //}
@@ -107,6 +108,9 @@ public class NewContactsActivity extends AppCompatActivity {
                         }else {
                             txtNocontact.setVisibility(View.VISIBLE);
                         }
+                    }else {
+                        txtNocontact.setVisibility(View.VISIBLE);
+                        txtNocontact.setText(response.body().getMessage());
                     }
                 }else {
                     Toast.makeText(NewContactsActivity.this,"Please try agaiin",Toast.LENGTH_SHORT).show();
@@ -236,5 +240,20 @@ public class NewContactsActivity extends AppCompatActivity {
             userResponseCall.cancel();
         }
         super.onStop();
+    }
+    public String getNameFromNumber(String mobile) {
+        String contactName = null;
+        ContentResolver cr = getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(mobile));
+        Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+
+        if(cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        if(cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return contactName;
     }
 }

@@ -7,15 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cybercareinfoways.aisha.R;
+import com.cybercareinfoways.aisha.activities.ContactsActivity;
+import com.cybercareinfoways.aisha.activities.NewContactsActivity;
 import com.cybercareinfoways.aisha.model.UserData;
-import com.cybercareinfoways.helpers.TextDrawable;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Nutan on 07-03-2017.
@@ -31,7 +35,6 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         this.availableUserList = availableUserList;
         picasso = Picasso.with(context);
     }
-
     @Override
     public UserAvialableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.user_available_list,parent,false);
@@ -50,6 +53,19 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         }
         holder.txtavailableUserMobile.setText(userData.getMobile());
         holder.txtAvailableUserStatus.setText(""+userData.getImage_status());
+        for (int i = 0; i<availableUserList.size();i++){
+//            TextView textView = new TextView(context);
+//            textView.setTextColor(context.getResources().getColor(android.R.color.darker_gray));
+
+            if (context instanceof ContactsActivity) {
+                holder.txtNamefromNumber.setText(((ContactsActivity)context).getNameFromNumber(availableUserList.get(i).getMobile()));
+            }
+            if (context instanceof NewContactsActivity){
+                holder.txtNamefromNumber.setText(((NewContactsActivity)context).getNameFromNumber(availableUserList.get(i).getMobile()));
+            }
+//            holder.textViews.add(textView);
+//            holder.user_avialable_layout.addView(textView);
+        }
     }
 
     @Override
@@ -59,12 +75,40 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
 
     public class UserAvialableViewHolder extends RecyclerView.ViewHolder{
         ImageView imgAvailableUserPic;
-        TextView txtavailableUserMobile,txtAvailableUserStatus;
+        TextView txtavailableUserMobile,txtAvailableUserStatus,txtNamefromNumber;
+        LinearLayout user_avialable_layout;
+        List<TextView> textViews;
         public UserAvialableViewHolder(View itemView) {
             super(itemView);
             imgAvailableUserPic =(ImageView)itemView.findViewById(R.id.imgAvailableUserPic);
             txtavailableUserMobile = (TextView)itemView.findViewById(R.id.txtavailableUserMobile);
             txtAvailableUserStatus =(TextView)itemView.findViewById(R.id.txtAvailableUserStatus);
+            user_avialable_layout = (LinearLayout)itemView.findViewById(R.id.user_avialable_layout);
+            txtNamefromNumber = (TextView)itemView.findViewById(R.id.txtNamefromNumber);
+            textViews = new LinkedList<>();
         }
     }
+//    public String getContactName(final String phoneNumber) {
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                ContentResolver cr = context.getContentResolver();
+//                Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+//                Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+//                if (cursor == null) {
+//                    return;
+//                }
+//                String contactName = null;
+//                if(cursor.moveToFirst()) {
+//                    contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+//                }
+//
+//                if(cursor != null && !cursor.isClosed()) {
+//                    cursor.close();
+//                }
+//
+//            }
+//        }).start();
+//
+//    }
 }
