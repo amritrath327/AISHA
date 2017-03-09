@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">AISHA</string>
     <string name="title_activity_maps">Map</string>
-    <string name="facebook_app_id">672839479562248</string>
+    <string name="facebook_app_id">104993823367559</string>
     <string name="action_search_country">Search Country</string>
     <string name="enter_otp">Enter OTP</string>
     <string name="otp_instruction">Otp Instruction</string>

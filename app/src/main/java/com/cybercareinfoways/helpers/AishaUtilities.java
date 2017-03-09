@@ -92,6 +92,17 @@ public class AishaUtilities {
         String name = sharedPreferences.getString(AishaConstants.EXTRA_NAME,"");
         return name;
     }
+    public static void setSharedPreffToken(Context context,String token){
+        SharedPreferences sharedPreferencesToken = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferencesToken.edit();
+        editor.putString(AishaConstants.EXTRA_TOKEN,token);
+        editor.commit();
+    }
+    public static String getSharedPreffToken(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString(AishaConstants.EXTRA_TOKEN,"");
+        return token;
+    }
     public static boolean isConnectingToInternet(Context _context) {
         ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
 

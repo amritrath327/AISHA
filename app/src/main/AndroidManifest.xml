@@ -85,7 +85,7 @@
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
-            android:authorities="com.facebook.app.FacebookContentProvider672839479562248"
+            android:authorities="com.facebook.app.FacebookContentProvider104993823367559"
             android:exported="true" />
 
         <activity
@@ -93,6 +93,16 @@
             android:screenOrientation="portrait" />
         <activity android:name=".activities.HomeActivity" />
         <activity android:name=".activities.NewContactsActivity"></activity>
+        <service android:name="com.cybercareinfoways.fcm.FireIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name="com.cybercareinfoways.fcm.FireMsgService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
