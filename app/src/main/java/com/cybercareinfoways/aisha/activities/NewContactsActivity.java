@@ -86,7 +86,11 @@ public class NewContactsActivity extends AppCompatActivity {
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
             //contacts.setMobile("9668452233");
-            contacts.setMobile(contactDataList.get(i).getMobile().substring(contactDataList.get(i).getMobile().length()-10));
+            if (contactDataList.get(i).getMobile().length()>10) {
+                contacts.setMobile(contactDataList.get(i).getMobile().substring(contactDataList.get(i).getMobile().length() - 10));
+            }else {
+                contacts.setMobile(contactDataList.get(i).getMobile());
+            }
             contactses.add(contacts);
         }
         //}

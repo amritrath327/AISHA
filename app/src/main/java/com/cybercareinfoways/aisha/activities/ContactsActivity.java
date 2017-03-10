@@ -485,7 +485,11 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         for (int i=0;i<contactsDataList.size();i++) {
             Contacts contacts = new Contacts();
             //contacts.setMobile("9668452233");
-            contacts.setMobile(contactsDataList.get(i).getMobile().substring(contactsDataList.get(i).getMobile().length()-10).toString());
+            if (contactsDataList.get(i).getMobile().length()>0) {
+                contacts.setMobile(contactsDataList.get(i).getMobile().substring(contactsDataList.get(i).getMobile().length() - 10).toString());
+            }else {
+                contacts.setMobile(contactsDataList.get(i).getMobile());
+            }
             contactses.add(contacts);
         }
         //}
