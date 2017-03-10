@@ -14,6 +14,7 @@ import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.ContactsActivity;
 import com.cybercareinfoways.aisha.activities.NewContactsActivity;
 import com.cybercareinfoways.aisha.model.UserData;
+import com.cybercareinfoways.helpers.OnItemClickListner;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -29,6 +30,7 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
     private Context context;
     private ArrayList<UserData> availableUserList;
     private Picasso picasso;
+
 
     public UserAvailableAdapter(Context context, ArrayList<UserData> availableUserList) {
         this.context = context;
@@ -53,19 +55,14 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         }
         holder.txtavailableUserMobile.setText(userData.getMobile());
         holder.txtAvailableUserStatus.setText(""+userData.getImage_status());
-        for (int i = 0; i<availableUserList.size();i++){
-//            TextView textView = new TextView(context);
-//            textView.setTextColor(context.getResources().getColor(android.R.color.darker_gray));
-
+        //for (int i = 0; i<availableUserList.size();i++){
             if (context instanceof ContactsActivity) {
-                holder.txtNamefromNumber.setText(((ContactsActivity)context).getNameFromNumber(availableUserList.get(i).getMobile()));
+                holder.txtNamefromNumber.setText(((ContactsActivity)context).getNameFromNumber(availableUserList.get(position).getMobile()));
             }
             if (context instanceof NewContactsActivity){
-                holder.txtNamefromNumber.setText(((NewContactsActivity)context).getNameFromNumber(availableUserList.get(i).getMobile()));
+                holder.txtNamefromNumber.setText(((NewContactsActivity)context).getNameFromNumber(availableUserList.get(position).getMobile()));
             }
-//            holder.textViews.add(textView);
-//            holder.user_avialable_layout.addView(textView);
-        }
+        //}
     }
 
     @Override
@@ -73,7 +70,7 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         return availableUserList.size();
     }
 
-    public class UserAvialableViewHolder extends RecyclerView.ViewHolder{
+    public class UserAvialableViewHolder extends RecyclerView.ViewHolder {
         ImageView imgAvailableUserPic;
         TextView txtavailableUserMobile,txtAvailableUserStatus,txtNamefromNumber;
         LinearLayout user_avialable_layout;

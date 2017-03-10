@@ -92,7 +92,8 @@
             android:name=".activities.VerifyOTPActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.HomeActivity" />
-        <activity android:name=".activities.NewContactsActivity"></activity>
+        <activity android:name=".activities.NewContactsActivity" />
+
         <service android:name="com.cybercareinfoways.fcm.FireIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -103,6 +104,8 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <activity android:name=".activities.InvitationActivity"></activity>
     </application>
 
 </manifest>

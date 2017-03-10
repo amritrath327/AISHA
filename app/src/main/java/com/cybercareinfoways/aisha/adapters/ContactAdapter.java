@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.model.Contacts;
+import com.cybercareinfoways.aisha.model.UserData;
+import com.cybercareinfoways.helpers.OnItemClickListner;
 
 import java.util.ArrayList;
 
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewhOlder>{
     private Context context;
     private ArrayList<Contacts> cotacList;
+    private OnItemClickListner listner;
 
     public ContactAdapter(Context context, ArrayList<Contacts> cotacList) {
         this.context = context;
@@ -37,13 +40,17 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
         holder.contactName.setText(cotacList.get(position).getContactName());
         holder.contactNumber.setText(cotacList.get(position).getMobile());
     }
+    public void setOnItemclickListner(OnItemClickListner listner1){
+        this.listner  = listner1;
+        notifyDataSetChanged();
+    }
 
     @Override
     public int getItemCount() {
         return cotacList.size();
     }
 
-    public class ContactViewhOlder extends RecyclerView.ViewHolder{
+    public class ContactViewhOlder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView contactImage;
         TextView contactName,contactNumber;
         public ContactViewhOlder(View itemView) {
@@ -51,6 +58,14 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
             contactImage = (ImageView)itemView.findViewById(R.id.imgContact);
             contactName  = (TextView)itemView.findViewById(R.id.txtContactName);
             contactNumber = (TextView)itemView.findViewById(R.id.txtContactNumber);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (listner!=null){
+                listner.OnItemClick(v,getAdapterPosition());
+            }
         }
     }
 }

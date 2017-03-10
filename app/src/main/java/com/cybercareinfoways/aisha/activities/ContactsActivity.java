@@ -43,6 +43,7 @@ import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
 import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
+import com.cybercareinfoways.helpers.OnItemClickListner;
 import com.cybercareinfoways.helpers.TextDrawable;
 import com.cybercareinfoways.helpers.WebApi;
 import com.facebook.FacebookSdk;
@@ -388,7 +389,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         return contactName;
     }
 
-    public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>> {
+    public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>> implements OnItemClickListner {
         private WeakReference<ContactsActivity> contactsActivityWeakReference;
         public ContactTask(ContactsActivity contactsActivity){
             contactsActivityWeakReference = new WeakReference<ContactsActivity>(contactsActivity);
@@ -460,12 +461,21 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
                 if (contactses != null && contactses.size() > 0) {
                     contactAdapter = new ContactAdapter(ContactsActivity.this, contactses);
                     rcvContacts.setAdapter(contactAdapter);
+                    contactAdapter.setOnItemclickListner(this);
                     contactsDataList.addAll(contactses);
                     if (AishaUtilities.isConnectingToInternet(ContactsActivity.this)) {
                         showAvailableContacts();
                     }
                 }
             }
+        }
+
+        @Override
+        public void OnItemClick(View view, int pos) {
+            Contacts contacts = contactsDataList.get(pos);
+            Intent intent = new Intent(ContactsActivity.this,InvitationActivity.class);
+            intent.putExtra(AishaConstants.EXTRA_INVITATION,contacts);
+            startActivity(intent);
         }
     }
     private void showAvailableContacts() {

@@ -42,4 +42,5 @@ public class AishaConstants {
     public static final String EXTRA_ERROR = "EXTRA_ERROR";
     public static final String EXTRA_RESPONSE = "EXTRA_RESPONSE";
     public static final String EXTRA_TOKEN = "EXTRA_TOKEN";
+    public static final String EXTRA_INVITATION = "EXTRA_INVITATION";
 }
