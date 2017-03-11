@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.fragments.ContactsFragment;
+import com.cybercareinfoways.aisha.fragments.ProfileFragment;
 import com.cybercareinfoways.aisha.services.SyncTokenService;
 import com.cybercareinfoways.helpers.AishaUtilities;
 
@@ -23,6 +25,9 @@ public class HomeActivity extends AppCompatActivity {
     @BindView(R.id.navigation)
     BottomNavigationView navigationView;
 
+
+    FragmentManager fragmentManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +35,7 @@ public class HomeActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("AISHA");
-
+        fragmentManager = getSupportFragmentManager();
 
         sendTokenServiceCall();
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -41,10 +46,13 @@ public class HomeActivity extends AppCompatActivity {
 
                         break;
                     case R.id.contacts:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.content, new ContactsFragment())
+                        fragmentManager.beginTransaction().replace(R.id.content, new ContactsFragment(), "ContactFrag")
                                 .commit();
                         break;
-
+                    case R.id.profile:
+                        fragmentManager.beginTransaction().replace(R.id.content, new ProfileFragment(), "ProfileFragment")
+                                .commit();
+                        break;
 
                 }
                 return true;

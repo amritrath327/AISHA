@@ -4,6 +4,8 @@ import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
 import com.cybercareinfoways.webapihelpers.GenOtpRequest;
 import com.cybercareinfoways.webapihelpers.GenOtpResponse;
+import com.cybercareinfoways.webapihelpers.ProfileResponse;
+import com.cybercareinfoways.webapihelpers.SimpleWebRequest;
 import com.cybercareinfoways.webapihelpers.TokenRegRequest;
 import com.cybercareinfoways.webapihelpers.TokenRegResponse;
 import com.cybercareinfoways.webapihelpers.VerifyOtpRequest;
@@ -29,4 +31,7 @@ public interface WebApi {
 
     @POST("device")
     Call<TokenRegResponse> getRegToken(@Body TokenRegRequest regRequest);
+
+    @POST("profile")
+    Call<ProfileResponse> getProfile(@Body SimpleWebRequest request);
 }

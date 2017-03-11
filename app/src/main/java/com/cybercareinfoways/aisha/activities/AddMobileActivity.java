@@ -25,7 +25,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.helpers.AishaConstants;
@@ -165,7 +164,7 @@ public class AddMobileActivity extends AppCompatActivity {
                 } else {
                     etName.setError(null);
                     etMobile.setError(null);
-                    requestMessagePermission(code, phone, name);
+                    showAlertDialog(code, phone, name);
                 }
             } else {
                 Snackbar snackbar = Snackbar.make(etMobile, AishaConstants.ACCECPTTERMS, Snackbar.LENGTH_LONG);
@@ -187,22 +186,17 @@ public class AddMobileActivity extends AppCompatActivity {
 
                 requestPermissions(new String[]{android.Manifest.permission.READ_SMS, android.Manifest.permission.RECEIVE_SMS}, MSGREQ);
             } else {
-                showAlertDialog(code, mobile, name);
+                fireIntent(code, mobile, name);
             }
         } else {
-            showAlertDialog(code, mobile, name);
+            fireIntent(code, mobile, name);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == MSGREQ) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showAlertDialog(code, phone, name);
-            } else {
-                Toast.makeText(AddMobileActivity.this, "Please Grant messaging permission from App Settings", Toast.LENGTH_SHORT).show();
-                finish();
-            }
+            fireIntent(code, phone, name);
         }
     }
 
@@ -213,7 +207,7 @@ public class AddMobileActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                fireIntent(code, phone, name);
+                requestMessagePermission(code, phone, name);
             }
 
         });

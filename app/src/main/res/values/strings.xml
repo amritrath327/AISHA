@@ -7,4 +7,7 @@
     <string name="otp_instruction">Otp Instruction</string>
     <string name="resend_otp">RESEND OTP</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

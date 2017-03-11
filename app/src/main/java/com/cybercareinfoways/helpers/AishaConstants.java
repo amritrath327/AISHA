@@ -43,4 +43,6 @@ public class AishaConstants {
     public static final String EXTRA_RESPONSE = "EXTRA_RESPONSE";
     public static final String EXTRA_TOKEN = "EXTRA_TOKEN";
     public static final String EXTRA_INVITATION = "EXTRA_INVITATION";
+    public static final String PROFILEMSG = "Geting Profile Details";
+    public static final String PROFILEFETCHERROR = "Could not fetch profile";
 }
