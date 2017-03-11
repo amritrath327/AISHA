@@ -91,7 +91,16 @@
         <activity
             android:name=".activities.VerifyOTPActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".activities.HomeActivity" />
+        <activity android:name=".activities.HomeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="com.cybercareinfoways.aisha" />
+            </intent-filter>
+        </activity>
         <activity android:name=".activities.NewContactsActivity" />
 
         <service android:name="com.cybercareinfoways.fcm.FireIDService">
@@ -104,6 +113,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <service
+            android:name=".services.SyncTokenService"
+            android:enabled="true"
+            android:exported="false" />
 
         <activity android:name=".activities.InvitationActivity"></activity>
     </application>

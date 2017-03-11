@@ -1,5 +1,6 @@
 package com.cybercareinfoways.helpers;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,7 +12,6 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,7 +30,6 @@ import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -44,7 +43,7 @@ public class AishaUtilities {
         return statusCode == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void requestPermission(AppCompatActivity activity, String[] permission, int requestCode) {
+    public static void requestPermission(Activity activity, String[] permission, int requestCode) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission[0])) {
             Toast.makeText(activity, "Application need permission", Toast.LENGTH_SHORT).show();
         }
@@ -63,7 +62,7 @@ public class AishaUtilities {
         SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(AishaConstants.EXTRA_MOBILE,mobileNo);
-        editor.commit();
+        editor.apply();
     }
     public static String  getSharedPreffMobile(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
@@ -74,7 +73,7 @@ public class AishaUtilities {
         SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(AishaConstants.EXTRA_USERID,userId);
-        editor.commit();
+        editor.apply();
     }
     public static String getSharedPreffUserid(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
@@ -85,7 +84,7 @@ public class AishaUtilities {
         SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(AishaConstants.EXTRA_NAME,name);
-        editor.commit();
+        editor.apply();
     }
     public static String getSharedPreffName(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
@@ -96,7 +95,7 @@ public class AishaUtilities {
         SharedPreferences sharedPreferencesToken = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferencesToken.edit();
         editor.putString(AishaConstants.EXTRA_TOKEN,token);
-        editor.commit();
+        editor.apply();
     }
     public static String getSharedPreffToken(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);

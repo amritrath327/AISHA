@@ -2,7 +2,6 @@ package com.cybercareinfoways.fcm;
 
 import android.util.Log;
 
-import com.cybercareinfoways.helpers.AishaUtilities;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
@@ -16,6 +15,6 @@ public class FireIDService extends FirebaseInstanceIdService {
         //super.onTokenRefresh();
         String token = FirebaseInstanceId.getInstance().getToken();
         Log.v("Token==>",token);
-        AishaUtilities.setSharedPreffToken(this,token);
+        // AishaUtilities.setSharedPreffToken(this,token);
     }
 }

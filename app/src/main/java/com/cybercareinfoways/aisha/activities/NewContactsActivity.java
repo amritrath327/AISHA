@@ -8,10 +8,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,8 +41,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class NewContactsActivity extends AppCompatActivity {
-    private ArrayList<Contacts> cotactList,contactDataList;
     private static final int READCONTACT_CODE = 201;
+    ProgressDialog dilogAvailableUser;
+    private ArrayList<Contacts> cotactList, contactDataList;
     private String userId;
     private Call<UserResponse>userResponseCall;
     private WebApi webApi;
@@ -51,7 +52,7 @@ public class NewContactsActivity extends AppCompatActivity {
     private RecyclerView rcvAvailableUsers;
     private TextView txtNocontact;
     private UserAvailableAdapter userAvailableAdapter;
-    ProgressDialog dilogAvailableUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,11 +87,11 @@ public class NewContactsActivity extends AppCompatActivity {
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
             //contacts.setMobile("9668452233");
-            if (contactDataList.get(i).getMobile().length()>10) {
-                contacts.setMobile(contactDataList.get(i).getMobile().substring(contactDataList.get(i).getMobile().length() - 10));
-            }else {
+//            if (contactDataList.get(i).getMobile().length()>10) {
+//                contacts.setMobile(contactDataList.get(i).getMobile().substring(contactDataList.get(i).getMobile().length() - 10));
+//            }else {
                 contacts.setMobile(contactDataList.get(i).getMobile());
-            }
+//            }
             contactses.add(contacts);
         }
         //}
@@ -145,6 +146,44 @@ public class NewContactsActivity extends AppCompatActivity {
             getAllContacts();
         }
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onStop() {
+        if (dilogAvailableUser != null || dilogAvailableUser.isShowing()) {
+            dilogAvailableUser.cancel();
+        }
+        if (userResponseCall != null) {
+            userResponseCall.cancel();
+        }
+        super.onStop();
+    }
+
+    public String getNameFromNumber(String mobile) {
+        String contactName = null;
+        ContentResolver cr = getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(mobile));
+        Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return contactName;
+    }
+
     public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>>{
         private WeakReference<NewContactsActivity> newContactsActivityWeakReference;
         public ContactTask(NewContactsActivity newContactsActivity){
@@ -223,41 +262,5 @@ public class NewContactsActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId()==android.R.id.home){
-            finish();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void onStop() {
-        if (dilogAvailableUser!=null || dilogAvailableUser.isShowing()){
-            dilogAvailableUser.cancel();
-        }
-        if (userResponseCall!=null){
-            userResponseCall.cancel();
-        }
-        super.onStop();
-    }
-    public String getNameFromNumber(String mobile) {
-        String contactName = null;
-        ContentResolver cr = getContentResolver();
-        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(mobile));
-        Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
-
-        if(cursor.moveToFirst()) {
-            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
-        }
-        if(cursor != null && !cursor.isClosed()) {
-            cursor.close();
-        }
-
-        return contactName;
     }
 }

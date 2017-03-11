@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.cybercareinfoways.aisha.activities.ContactsActivity">
-<include layout="@layout/toolbar"/>
+    <!--<include layout="@layout/toolbar"/>-->
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -20,36 +20,36 @@
                 android:orientation="vertical"
                 android:padding="10dp">
                 <RelativeLayout
+                    android:id="@+id/relUserBoard"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/relUserBoard">
+                    android:layout_height="wrap_content">
                     <com.cybercareinfoways.helpers.CircleImageView
+                        android:id="@+id/imgSmallUserpic"
                         android:layout_width="60dp"
                         android:layout_height="60dp"
-                        android:id="@+id/imgSmallUserpic"
                         android:src="@drawable/ic_add"/>
                     <TextView
                         android:id="@+id/txtSmallUsername"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/imgSmallUserpic"
-                        android:text="Tanmay"
+                        android:layout_centerInParent="true"
                         android:layout_marginLeft="5dp"
-                        android:layout_centerInParent="true"/>
+                        android:layout_toRightOf="@+id/imgSmallUserpic"
+                        android:text="Tanmay" />
                     <ImageView
+                        android:id="@+id/imgArrow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerInParent="true"
-                        android:src="@drawable/ic_exp_arrow"
-                        android:id="@+id/imgArrow"/>
+                        android:src="@drawable/ic_exp_arrow" />
                 </RelativeLayout>
 
                 <LinearLayout
+                    android:id="@+id/linUserNAme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:id="@+id/linUserNAme"
                     android:visibility="gone">
                     <View
                         android:layout_width="match_parent"
@@ -62,20 +62,20 @@
                         android:layout_marginTop="10dp"
                         android:orientation="horizontal">
                         <FrameLayout
+                            android:id="@+id/framePic"
                             android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:id="@+id/framePic">
+                            android:layout_height="80dp">
                             <com.cybercareinfoways.helpers.CircleImageView
+                                android:id="@+id/imgUserPic"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:id="@+id/imgUserPic"
                                 android:src="@drawable/ic_add"/>
                             <ImageView
                                 android:layout_width="15dp"
                                 android:layout_height="15dp"
-                                android:src="@drawable/ic_edit_pic"
                                 android:layout_gravity="right|bottom"
-                                android:layout_marginRight="15dp"/>
+                                android:layout_marginRight="15dp"
+                                android:src="@drawable/ic_edit_pic" />
                         </FrameLayout>
 
                         <LinearLayout
@@ -84,44 +84,44 @@
                             android:layout_weight="1"
                             android:orientation="vertical">
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Username"
                                 android:id="@+id/txtUserNameextt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
                                 android:layout_toRightOf="@+id/imgUserPic"
-                                android:layout_marginTop="15dp"/>
+                                android:text="Username" />
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Tanmay"
                                 android:id="@+id/txtUserName"
-                                android:layout_below="@+id/txtUserNameextt"
-                                android:layout_toRightOf="@+id/imgUserPic" />
-                            <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Status"
+                                android:layout_below="@+id/txtUserNameextt"
+                                android:layout_toRightOf="@+id/imgUserPic"
+                                android:text="Tanmay" />
+                            <TextView
                                 android:id="@+id/txtUserStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
                                 android:layout_below="@+id/txtUserName"
-                                android:layout_toRightOf="@+id/imgUserPic" />
+                                android:layout_toRightOf="@+id/imgUserPic"
+                                android:text="Status" />
                         </LinearLayout>
                         <View
                                 android:layout_width="1dp"
                                 android:layout_height="match_parent"
-                                android:background="@android:color/darker_gray"
+                            android:layout_marginBottom="5dp"
                                 android:layout_marginRight="10dp"
-                                android:layout_marginBottom="5dp"/>
+                            android:background="@android:color/darker_gray" />
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
                             <TextView
+                                android:id="@+id/txtCircularContacts"
                                 android:layout_width="70dp"
                                 android:layout_height="70dp"
                                 android:background="@drawable/circle_text_bg"
-                                android:text="34"
                                 android:gravity="center"
-                                android:id="@+id/txtCircularContacts"/>
+                                android:text="34" />
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -136,9 +136,9 @@
                 </LinearLayout>
             </LinearLayout>
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/rcvAvailableUsers"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/rcvAvailableUsers"/>
+                android:layout_height="wrap_content" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
@@ -148,8 +148,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Want to Invite more friends?"
                     android:gravity="center"
+                    android:text="Want to Invite more friends?"
                     android:textColor="@android:color/white"
                     android:textSize="20sp"/>
                 <RelativeLayout
@@ -157,38 +157,38 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp">
                     <ImageView
+                        android:id="@+id/imgWhastapp"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/ic_whatsapp"
                         android:layout_alignParentLeft="true"
-                        android:id="@+id/imgWhastapp"/>
+                        android:src="@drawable/ic_whatsapp" />
                     <ImageView
+                        android:id="@+id/imgFacebook"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/ic_facebook"
                         android:layout_centerInParent="true"
-                        android:id="@+id/imgFacebook"/>
+                        android:src="@drawable/ic_facebook" />
                     <ImageView
+                        android:id="@+id/imgMore"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/ic_more"
                         android:layout_alignParentRight="true"
-                        android:id="@+id/imgMore"/>
+                        android:src="@drawable/ic_more" />
                 </RelativeLayout>
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp"
                     android:layout_marginTop="10dp"
+                    android:gravity="center"
                     android:text="Invite them using your favourite social Networks or simply tap on the following list."
-                    android:gravity="center"/>
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
             </LinearLayout>
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/rcvContacts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/rcvContacts"/>
+                android:layout_weight="1" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

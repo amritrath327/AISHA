@@ -4,6 +4,8 @@ import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
 import com.cybercareinfoways.webapihelpers.GenOtpRequest;
 import com.cybercareinfoways.webapihelpers.GenOtpResponse;
+import com.cybercareinfoways.webapihelpers.TokenRegRequest;
+import com.cybercareinfoways.webapihelpers.TokenRegResponse;
 import com.cybercareinfoways.webapihelpers.VerifyOtpRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpResponse;
 
@@ -21,6 +23,10 @@ public interface WebApi {
 
     @POST("user/verify")
     Call<VerifyOtpResponse> getVerifyOtpResponseCall(@Body VerifyOtpRequest request);
+
     @POST("contact")
     Call<UserResponse> getAvailableUser(@Body UserRequest userRequest);
+
+    @POST("device")
+    Call<TokenRegResponse> getRegToken(@Body TokenRegRequest regRequest);
 }

@@ -13,12 +13,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -65,17 +65,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ContactsActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final int READCONTACT_CODE = 201;
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_REQUEST = 1;
+    private static final int READCONTACT_CODE = 201;
     private static final int REQUEST_ACESS_STORAGE=3;
     private static final int REQUEST_ACESS_CAMERA=2;
-    private Uri uri;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private ContactAdapter contactAdapter;
-    private ArrayList<Contacts> cotactList,contactsDataList;
-    private ArrayList<UserData> userAvilableList;
     @BindView(R.id.rcvContacts)
     RecyclerView rcvContacts;
     @BindView(R.id.imgWhastapp)
@@ -96,23 +92,49 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     ImageView imgSmallUserpic;
     @BindView(R.id.imgUserPic)
     ImageView imgUserPic;
-    private String appLinkUrl;
     @BindView(R.id.framePic)
     FrameLayout framePic;
     @BindView(R.id.txtUserName)
     TextView txtUserName;
     @BindView(R.id.txtSmallUsername)
     TextView txtSmallUsername;
-    private String userName;
     @BindView(R.id.rcvAvailableUsers)
     RecyclerView rcvAvailableUsers;
     @BindView(R.id.txtCircularContacts)
     TextView txtCircularContacts;
+    ProgressDialog dilogAvailableUser;
+    private Uri uri;
+    private ContactAdapter contactAdapter;
+    private ArrayList<Contacts> cotactList, contactsDataList;
+    private ArrayList<UserData> userAvilableList;
+    private String appLinkUrl;
+    private String userName;
     private Call<UserResponse> userResponseCall;
     private WebApi webApi;
     private String userId;
     private UserAvailableAdapter userAvailableAdapter;
-    ProgressDialog dilogAvailableUser;
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
+    }
 
     //https://fb.me/674228709423325
     @Override
@@ -239,6 +261,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
             startDilog();
         }
     }
+
     private void startDilog() {
         AlertDialog.Builder myAlertDilog = new AlertDialog.Builder(ContactsActivity.this);
         myAlertDilog.setTitle("Upload picture option..");
@@ -269,6 +292,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         AlertDialog alertDialog = myAlertDilog.create();
         alertDialog.show();
     }
+
     private void openCameraApp() {
         Intent picIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (picIntent.resolveActivity(getPackageManager())!= null){
@@ -344,33 +368,12 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
+
     private Uri getImageUri(ContactsActivity mainActivity, Bitmap bitmap) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
         String path = MediaStore.Images.Media.insertImage(mainActivity.getContentResolver(), bitmap, "Title", null);
         return Uri.parse(path);
-    }
-
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-        return inSampleSize;
     }
 
     public String getNameFromNumber(String mobile) {
@@ -389,10 +392,88 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         return contactName;
     }
 
+    private void showAvailableContacts() {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setUser_id(userId);
+        ArrayList<Contacts> contactses = new ArrayList<>(contactsDataList.size());
+        for (int i = 0; i < contactsDataList.size(); i++) {
+            Contacts contacts = new Contacts();
+            //contacts.setMobile("9668452233");
+//            if (contactsDataList.get(i).getMobile().length()>0) {
+//                contacts.setMobile(contactsDataList.get(i).getMobile().substring(contactsDataList.get(i).getMobile().length() - 10).toString());
+//            }else {
+            contacts.setMobile(contactsDataList.get(i).getMobile());
+//            }
+            contactses.add(contacts);
+        }
+        //}
+        userRequest.setContacts(contactses);
+        userResponseCall = webApi.getAvailableUser(userRequest);
+        userResponseCall.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (dilogAvailableUser.isShowing()) {
+                    dilogAvailableUser.dismiss();
+                }
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
+                        txtCircularContacts.setText("" + response.body().getContacts().size());
+                        userAvilableList.addAll(response.body().getContacts());
+                        if (userAvilableList != null && userAvilableList.size() > 0) {
+                            userAvailableAdapter = new UserAvailableAdapter(ContactsActivity.this, userAvilableList);
+                            rcvAvailableUsers.setAdapter(userAvailableAdapter);
+                        } else {
+                            Toast.makeText(ContactsActivity.this, "No AISHA contacts found.", Toast.LENGTH_SHORT).show();
+                            txtCircularContacts.setText("0");
+                        }
+                    } else {
+                        Toast.makeText(ContactsActivity.this, "No AISHA contacts found.", Toast.LENGTH_SHORT).show();
+                        txtCircularContacts.setText("0");
+                    }
+                } else {
+                    Toast.makeText(ContactsActivity.this, "Please try agaiin", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                if (dilogAvailableUser.isShowing()) {
+                    dilogAvailableUser.dismiss();
+                }
+                if (t instanceof SocketTimeoutException) {
+                    Toast.makeText(ContactsActivity.this, AishaConstants.CONNECYION_TIME_OUT, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.v(AishaConstants.EXTRA_ERROR, t.getMessage());
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        if (dilogAvailableUser != null || dilogAvailableUser.isShowing()) {
+            dilogAvailableUser.cancel();
+        }
+        if (userResponseCall != null) {
+            userResponseCall.cancel();
+        }
+        super.onStop();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return false;
+    }
+
     public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>> implements OnItemClickListner {
-        private WeakReference<ContactsActivity> contactsActivityWeakReference;
+        private WeakReference<ContactsActivity> contactsFragmentReference;
         public ContactTask(ContactsActivity contactsActivity){
-            contactsActivityWeakReference = new WeakReference<ContactsActivity>(contactsActivity);
+            contactsFragmentReference = new WeakReference<ContactsActivity>(contactsActivity);
         }
         @Override
         protected void onPreExecute() {
@@ -457,7 +538,7 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
         @Override
         protected void onPostExecute(ArrayList<Contacts> contactses) {
             super.onPostExecute(contactses);
-            if (contactsActivityWeakReference.get()!=null) {
+            if (contactsFragmentReference.get() != null) {
                 if (contactses != null && contactses.size() > 0) {
                     contactAdapter = new ContactAdapter(ContactsActivity.this, contactses);
                     rcvContacts.setAdapter(contactAdapter);
@@ -477,82 +558,5 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
             intent.putExtra(AishaConstants.EXTRA_INVITATION,contacts);
             startActivity(intent);
         }
-    }
-    private void showAvailableContacts() {
-        UserRequest userRequest=new UserRequest();
-        userRequest.setUser_id(userId);
-        ArrayList<Contacts>contactses=new ArrayList<>(contactsDataList.size());
-        for (int i=0;i<contactsDataList.size();i++) {
-            Contacts contacts = new Contacts();
-            //contacts.setMobile("9668452233");
-            if (contactsDataList.get(i).getMobile().length()>0) {
-                contacts.setMobile(contactsDataList.get(i).getMobile().substring(contactsDataList.get(i).getMobile().length() - 10).toString());
-            }else {
-                contacts.setMobile(contactsDataList.get(i).getMobile());
-            }
-            contactses.add(contacts);
-        }
-        //}
-        userRequest.setContacts(contactses);
-        userResponseCall = webApi.getAvailableUser(userRequest);
-        userResponseCall.enqueue(new Callback<UserResponse>() {
-            @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (dilogAvailableUser.isShowing()){
-                    dilogAvailableUser.dismiss();
-                }
-                if (response.isSuccessful()){
-                    if (response.body().getStatus()==1){
-                        txtCircularContacts.setText(""+response.body().getContacts().size());
-                        userAvilableList.addAll(response.body().getContacts());
-                        if (userAvilableList!=null && userAvilableList.size()>0){
-                            userAvailableAdapter  = new UserAvailableAdapter(ContactsActivity.this,userAvilableList);
-                            rcvAvailableUsers.setAdapter(userAvailableAdapter);
-                        }else {
-                            Toast.makeText(ContactsActivity.this,"No AISHA contacts found.",Toast.LENGTH_SHORT).show();
-                            txtCircularContacts.setText("0");
-                        }
-                    }else {
-                        Toast.makeText(ContactsActivity.this,"No AISHA contacts found.",Toast.LENGTH_SHORT).show();
-                        txtCircularContacts.setText("0");
-                    }
-                }else {
-                    Toast.makeText(ContactsActivity.this,"Please try agaiin",Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserResponse> call, Throwable t) {
-                if (dilogAvailableUser.isShowing()){
-                    dilogAvailableUser.dismiss();
-                }
-                if (t instanceof SocketTimeoutException){
-                    Toast.makeText(ContactsActivity.this, AishaConstants.CONNECYION_TIME_OUT,Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.v(AishaConstants.EXTRA_ERROR,t.getMessage());
-                }
-            }
-        });
-    }
-
-    @Override
-    protected void onStop() {
-        if (dilogAvailableUser!=null || dilogAvailableUser.isShowing()){
-            dilogAvailableUser.cancel();
-        }
-        if (userResponseCall!=null){
-            userResponseCall.cancel();
-        }
-        super.onStop();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId()==android.R.id.home){
-            finish();
-            return true;
-        }
-        return false;
     }
 }
