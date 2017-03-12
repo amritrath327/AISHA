@@ -24,8 +24,6 @@ public class HomeActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.navigation)
     BottomNavigationView navigationView;
-
-
     FragmentManager fragmentManager;
 
     @Override

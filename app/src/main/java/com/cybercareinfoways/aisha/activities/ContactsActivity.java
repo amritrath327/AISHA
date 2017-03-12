@@ -80,7 +80,6 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     ImageView imgFacebook;
     @BindView(R.id.imgMore)
     ImageView imgMore;
-    ShareLinkContent content;
     @BindView(R.id.relUserBoard)
     RelativeLayout relUserBoard;
     @BindView(R.id.linUserNAme)
@@ -114,29 +113,8 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
     private String userId;
     private UserAvailableAdapter userAvailableAdapter;
 
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
 
-        if (height > reqHeight || width > reqWidth) {
 
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-        return inSampleSize;
-    }
-
-    //https://fb.me/674228709423325
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -558,5 +536,26 @@ public class ContactsActivity extends AppCompatActivity implements View.OnClickL
             intent.putExtra(AishaConstants.EXTRA_INVITATION,contacts);
             startActivity(intent);
         }
+    }
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
 }

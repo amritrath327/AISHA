@@ -45,4 +45,5 @@ public class AishaConstants {
     public static final String EXTRA_INVITATION = "EXTRA_INVITATION";
     public static final String PROFILEMSG = "Geting Profile Details";
     public static final String PROFILEFETCHERROR = "Could not fetch profile";
+    public static final String EXTRA_SMS="Download Aisha";
 }
