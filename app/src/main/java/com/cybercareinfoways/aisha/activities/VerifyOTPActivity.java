@@ -296,7 +296,6 @@ public class VerifyOTPActivity extends AppCompatActivity {
         e.putString(AishaConstants.USERID, user_id);
         e.apply();
         AishaUtilities.setSharedPreffUserID(VerifyOTPActivity.this,user_id);
-
         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);

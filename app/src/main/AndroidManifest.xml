@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:name="com.cybercareinfoways.helpers.AishaApplication"
@@ -119,7 +119,8 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".activities.InvitationActivity"></activity>
+        <activity android:name=".activities.InvitationActivity" />
+        <activity android:name=".activities.ZipprActivity"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.cybercareinfoways.aisha.activities;
+package com.cybercareinfoways.aisha.fragments;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -11,23 +11,18 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
-import com.cybercareinfoways.aisha.fragments.ContactsFragment;
-import com.cybercareinfoways.aisha.fragments.ProfileFragment;
-import com.cybercareinfoways.aisha.fragments.ZipprFragment;
-import com.cybercareinfoways.aisha.services.SyncTokenService;
-import com.cybercareinfoways.helpers.AishaUtilities;
+import com.cybercareinfoways.aisha.activities.ZipprActivity;
 import com.cybercareinfoways.helpers.LocationStorage;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -45,12 +40,11 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class HomeActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.navigation)
-    BottomNavigationView navigationView;
-    FragmentManager fragmentManager;
+/**
+ * Created by Nutan on 13-03-2017.
+ */
+
+public class ZipprFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final int REQUEST_ERROR_RESOLVE = 1001;
     private static final long UPDATE_ITERVAL = 10000;
     private static final long FASTEST_UPDATE_INTERVAL = UPDATE_ITERVAL / 2;
@@ -59,59 +53,38 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     Handler handler = new Handler();
-
+    @BindView(R.id.fab_add_zippr)
+    FloatingActionButton floatingActionButton;
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("AISHA");
-        Integer googleResultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.zippr_fragment,container,false);
+        ButterKnife.bind(this,view);
+        Integer googleResultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getActivity());
         if (googleResultCode == ConnectionResult.SUCCESS) {
             buildGoogleApiClient();
         } else {
-            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(HomeActivity.this, googleResultCode, REQUEST_ERROR_RESOLVE);
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), googleResultCode, REQUEST_ERROR_RESOLVE);
             if (dialog != null) {
                 dialog.show();
             }
         }
-        fragmentManager = getSupportFragmentManager();
-
-        sendTokenServiceCall();
-        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.history:
-
-                        break;
-                    case R.id.contacts:
-                        fragmentManager.beginTransaction().replace(R.id.content, new ContactsFragment(), "ContactFrag")
-                                .commit();
-                        break;
-                    case R.id.profile:
-                        fragmentManager.beginTransaction().replace(R.id.content, new ProfileFragment(), "ProfileFragment")
-                                .commit();
-                        break;
-                    case R.id.zippr:
-                        fragmentManager.beginTransaction().replace(R.id.content, new ZipprFragment(), "ZipprFragment").commit();
-                        break;
+            public void onClick(View v) {
+                if (LocationStorage.getInstance()!=null && LocationStorage.getInstance().getLocation()!=null) {
+                    Intent intent = new Intent(getActivity(), ZipprActivity.class);
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
                 }
-                return true;
             }
         });
+        return view;
     }
-
-    private void sendTokenServiceCall() {
-        if (AishaUtilities.isConnectingToInternet(this)) {
-            Intent i = new Intent(getApplicationContext(), SyncTokenService.class);
-            startService(i);
-        }
-    }
-
     protected synchronized void buildGoogleApiClient() {
-        googleApiClient = new GoogleApiClient.Builder(this)
+        googleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -129,37 +102,26 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.home_menu, menu);
-        return true;
+    public void onLocationChanged(Location location) {
+        if (location != null) {
+            LocationStorage.getInstance().setLocation(location);
+            Log.i("Location>>", "Current Location is" + location+"......////"+LocationStorage.getInstance().getLocation().getLatitude()+",,,,"+LocationStorage.getInstance().getLocation().getLongitude());
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+        }
+
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.item_contact) {
-            Intent intent = new Intent(HomeActivity.this, ContactsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        if (item.getItemId() == R.id.item_new) {
-            Intent intent = new Intent(HomeActivity.this, NewContactsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        return false;
-    }
-    @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int statusCode = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+            int statusCode = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION);
             if (statusCode == PackageManager.PERMISSION_GRANTED) {
                 getMyCuurentLocation();
             } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Toast.makeText(this, "App needs Location to work", Toast.LENGTH_SHORT).show();
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    Toast.makeText(getActivity(), "App needs Location to work", Toast.LENGTH_SHORT).show();
                 }
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_CODE);
             }
@@ -177,30 +139,22 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.v("CONNECTION", "FAILED");
     }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        if (location != null) {
-            Log.i("Location>>", "Current Location is" + location);
-            LocationStorage.getInstance().setLocation(location);
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-        }
-    }
     private void getMyCuurentLocation() {
         Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         if (location != null) {
             LocationStorage.getInstance().setLocation(location);
+            Log.i("Location>>", "location" + location+"......////"+LocationStorage.getInstance().getLocation().getLatitude()+",,,,"+LocationStorage.getInstance().getLocation().getLongitude());
         } else {
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
             builder.setAlwaysShow(true);
             PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
             result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-                @Override
+                 @Override
                 public void onResult(LocationSettingsResult locationSettingsResult) {
                     final Status status = locationSettingsResult.getStatus();
                     switch (status.getStatusCode()) {
                         case LocationSettingsStatusCodes.SUCCESS:
-                            if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                 // TODO: Consider calling
                                 //    ActivityCompat#requestPermissions
                                 // here to request the missing permissions, and then overriding
@@ -210,11 +164,11 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
                                 // for ActivityCompat#requestPermissions for more details.
                                 return;
                             }
-                            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, HomeActivity.this);
+                            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, ZipprFragment.this);
                             break;
                         case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                             try {
-                                status.startResolutionForResult(HomeActivity.this, RESOLUTION_CODE);
+                                status.startResolutionForResult(getActivity(), RESOLUTION_CODE);
                             } catch (IntentSender.SendIntentException e) {
                             }
                             break;
@@ -226,11 +180,12 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
     }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RESOLUTION_CODE && resultCode == RESULT_OK) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == RESOLUTION_CODE && resultCode == getActivity().RESULT_OK) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
                 //    ActivityCompat#requestPermissions
                 // here to request the missing permissions, and then overriding
@@ -242,7 +197,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             }
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
-        if (requestCode==REQUEST_ERROR_RESOLVE && resultCode==RESULT_OK){
+        if (requestCode==REQUEST_ERROR_RESOLVE && resultCode==getActivity().RESULT_OK){
             buildGoogleApiClient();
             googleApiClient.connect();
             Log.i("TAG", "Connected in OnACtivityResult");
@@ -256,22 +211,23 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             getMyCuurentLocation();
         }
     }
+
     @Override
-    protected void onStart() {
-        super.onStart();
+    public void onStart() {
         if (googleApiClient != null && !googleApiClient.isConnected()) {
             googleApiClient.connect();
             Log.i("TAG", "Connected in OnStart");
         }
+        super.onStart();
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void onStop() {
         if (googleApiClient != null) {
             if (googleApiClient.isConnected()) {
                 googleApiClient.disconnect();
             }
         }
+        super.onStop();
     }
 }
