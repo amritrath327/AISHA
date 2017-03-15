@@ -7,13 +7,13 @@ import com.cybercareinfoways.webapihelpers.GenOtpRequest;
 import com.cybercareinfoways.webapihelpers.GenOtpResponse;
 import com.cybercareinfoways.webapihelpers.ProfileResponse;
 import com.cybercareinfoways.webapihelpers.SimpleWebRequest;
+import com.cybercareinfoways.webapihelpers.SimpleWebResponse;
 import com.cybercareinfoways.webapihelpers.TokenRegRequest;
 import com.cybercareinfoways.webapihelpers.TokenRegResponse;
+import com.cybercareinfoways.webapihelpers.UpdateProfileRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpResponse;
 import com.cybercareinfoways.webapihelpers.ZipprResponse;
-
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -39,7 +39,11 @@ public interface WebApi {
     @POST("profile")
     Call<ProfileResponse> getProfile(@Body SimpleWebRequest request);
 
+    @POST("profile_update")
+    Call<SimpleWebResponse> updateProfile(@Body UpdateProfileRequest request);
+
     @POST("zipper")
     Call<ZipprResponse> setZipprLocation(@Body Zippr zippr);
     //Call<ZipprResponse> setZipprLocation(@Body Map<String,String> object);
+
 }

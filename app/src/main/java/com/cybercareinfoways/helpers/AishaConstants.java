@@ -46,4 +46,6 @@ public class AishaConstants {
     public static final String PROFILEMSG = "Geting Profile Details";
     public static final String PROFILEFETCHERROR = "Could not fetch profile";
     public static final String EXTRA_SMS="Download Aisha";
+    public static final String UPDATEPROFILEMSG = "Updating Profile";
+    public static final String UPDATEPROFILEERROR = "Error Updaing Profile";
 }

@@ -1,8 +1,11 @@
 package com.cybercareinfoways.helpers;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
@@ -12,6 +15,7 @@ import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
@@ -38,6 +42,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class AishaUtilities {
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
+
     public static boolean checkPermission(String permission, Context context) {
         int statusCode = ContextCompat.checkSelfPermission(context, permission);
         return statusCode == PackageManager.PERMISSION_GRANTED;
@@ -53,55 +59,65 @@ public class AishaUtilities {
     public static void requestPermission(Fragment fragment, String[] permission, int requestCode) {
         fragment.requestPermissions(permission, requestCode);
     }
+
     public static int dpToPx(Context context, int dp) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
-    public static void setSharedPreffMobile(Context context,String mobileNo){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
+
+    public static void setSharedPreffMobile(Context context, String mobileNo) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(AishaConstants.EXTRA_MOBILE,mobileNo);
+        editor.putString(AishaConstants.EXTRA_MOBILE, mobileNo);
         editor.apply();
     }
-    public static String  getSharedPreffMobile(Context context){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
-        String mobileNo = sharedPreferences.getString(AishaConstants.EXTRA_MOBILE,"");
+
+    public static String getSharedPreffMobile(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
+        String mobileNo = sharedPreferences.getString(AishaConstants.EXTRA_MOBILE, "");
         return mobileNo;
     }
-    public static void setSharedPreffUserID(Context context,String userId){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
+
+    public static void setSharedPreffUserID(Context context, String userId) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(AishaConstants.EXTRA_USERID,userId);
+        editor.putString(AishaConstants.EXTRA_USERID, userId);
         editor.apply();
     }
-    public static String getSharedPreffUserid(Context context){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
-        String userId = sharedPreferences.getString(AishaConstants.EXTRA_USERID,"");
+
+    public static String getSharedPreffUserid(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
+        String userId = sharedPreferences.getString(AishaConstants.EXTRA_USERID, "");
         return userId;
     }
-    public static void setSharedPreffUserNAme(Context context,String name){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
+
+    public static void setSharedPreffUserNAme(Context context, String name) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(AishaConstants.EXTRA_NAME,name);
+        editor.putString(AishaConstants.EXTRA_NAME, name);
         editor.apply();
     }
-    public static String getSharedPreffName(Context context){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
-        String name = sharedPreferences.getString(AishaConstants.EXTRA_NAME,"");
+
+    public static String getSharedPreffName(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
+        String name = sharedPreferences.getString(AishaConstants.EXTRA_NAME, "");
         return name;
     }
-    public static void setSharedPreffToken(Context context,String token){
-        SharedPreferences sharedPreferencesToken = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
+
+    public static void setSharedPreffToken(Context context, String token) {
+        SharedPreferences sharedPreferencesToken = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferencesToken.edit();
-        editor.putString(AishaConstants.EXTRA_TOKEN,token);
+        editor.putString(AishaConstants.EXTRA_TOKEN, token);
         editor.apply();
     }
-    public static String getSharedPreffToken(Context context){
-        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF,Context.MODE_PRIVATE);
-        String token = sharedPreferences.getString(AishaConstants.EXTRA_TOKEN,"");
+
+    public static String getSharedPreffToken(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AishaConstants.EXTRA_PREFF, Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString(AishaConstants.EXTRA_TOKEN, "");
         return token;
     }
+
     public static boolean isConnectingToInternet(Context _context) {
         ConnectivityManager connectivity = (ConnectivityManager) _context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -180,7 +196,7 @@ public class AishaUtilities {
 //        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
 //        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient client = new OkHttpClient.Builder()
-               // .addInterceptor(interceptor)
+                // .addInterceptor(interceptor)
                 .connectTimeout(15, TimeUnit.SECONDS)
                 .writeTimeout(15, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -196,7 +212,6 @@ public class AishaUtilities {
         return dialog;
     }
 
-
     public static String convertToString(InputStream is) throws IOException {
         BufferedReader r = new BufferedReader(new InputStreamReader(is));
         StringBuilder total = new StringBuilder();
@@ -206,4 +221,37 @@ public class AishaUtilities {
         }
         return total.toString();
     }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    public static boolean checkSDPermission(final Activity context) {
+
+        int currentAPIVersion = Build.VERSION.SDK_INT;
+        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+            if ((ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+                    || ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(context, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+                    alertBuilder.setCancelable(true);
+                    alertBuilder.setTitle("Permission necessary");
+                    alertBuilder.setMessage("External storage permission is necessary");
+                    alertBuilder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+                        public void onClick(DialogInterface dialog, int which) {
+                            ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                        }
+                    });
+                    AlertDialog alert = alertBuilder.create();
+                    alert.show();
+                } else {
+                    ActivityCompat.requestPermissions(context, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                }
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
 }

@@ -24,6 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="0dp"
         android:layout_marginTop="0dp"
+        android:background="@null"
         app:layout_constraintRight_toRightOf="@+id/iv_profile"
         app:layout_constraintTop_toTopOf="@+id/iv_profile"
         app:srcCompat="@android:drawable/ic_menu_edit" />
