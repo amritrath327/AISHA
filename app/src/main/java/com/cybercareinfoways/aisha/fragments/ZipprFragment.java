@@ -17,11 +17,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
+import com.cybercareinfoways.aisha.activities.SearchAishaCodeActivity;
 import com.cybercareinfoways.aisha.activities.ZipprActivity;
 import com.cybercareinfoways.helpers.LocationStorage;
 import com.google.android.gms.common.ConnectionResult;
@@ -55,6 +59,13 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
     Handler handler = new Handler();
     @BindView(R.id.fab_add_zippr)
     FloatingActionButton floatingActionButton;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -229,5 +240,22 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
             }
         }
         super.onStop();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.search,menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
+        if (item.getItemId()==R.id.item_search){
+            Intent intent=new Intent(getActivity(), SearchAishaCodeActivity.class);
+            startActivity(intent);
+            return true;
+        }
+        return false;
     }
 }

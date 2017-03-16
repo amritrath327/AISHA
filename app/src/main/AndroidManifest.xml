@@ -121,7 +121,9 @@
             android:exported="false" />
 
         <activity android:name=".activities.InvitationActivity" />
-        <activity android:name=".activities.ZipprActivity"></activity>
+        <activity android:name=".activities.ZipprActivity" />
+        <activity android:name=".activities.SearchAishaCodeActivity" />
+        <activity android:name=".activities.ZipprFoundActivity"></activity>
     </application>
 
 </manifest>

@@ -22,9 +22,6 @@ android {
     repositories {
         mavenCentral()
     }
-    dexOptions {
-        javaMaxHeapSize "4g"
-    }
 }
 
 dependencies {

@@ -50,4 +50,6 @@ public class AishaConstants {
     public static final String UPDATEPROFILEERROR = "Error Updaing Profile";
     public static final String STATUS = "status";
     public static final String MESSAGE = "message";
+    public static final String EXTRA_ZIPPR = "EXTRA_ZIPPR";
+    public static final String EXTRA_ZIPPR_CODE = "EXTRA_ZIPPR_CODE";
 }

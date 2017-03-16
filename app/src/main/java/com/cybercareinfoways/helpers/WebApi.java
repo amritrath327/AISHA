@@ -1,5 +1,6 @@
 package com.cybercareinfoways.helpers;
 
+import com.cybercareinfoways.aisha.model.ZipprCodeResponse;
 import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
 import com.cybercareinfoways.aisha.model.Zippr;
@@ -14,6 +15,8 @@ import com.cybercareinfoways.webapihelpers.UpdateProfileRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpResponse;
 import com.cybercareinfoways.webapihelpers.ZipprResponse;
+
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -45,5 +48,6 @@ public interface WebApi {
     @POST("zipper")
     Call<ZipprResponse> setZipprLocation(@Body Zippr zippr);
     //Call<ZipprResponse> setZipprLocation(@Body Map<String,String> object);
-
+    @POST("search_zipper")
+    Call<ZipprCodeResponse> getAddressFromCode(@Body Map<String,String> object);
 }
