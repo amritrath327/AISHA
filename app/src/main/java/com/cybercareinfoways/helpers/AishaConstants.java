@@ -48,4 +48,6 @@ public class AishaConstants {
     public static final String EXTRA_SMS="Download Aisha";
     public static final String UPDATEPROFILEMSG = "Updating Profile";
     public static final String UPDATEPROFILEERROR = "Error Updaing Profile";
+    public static final String STATUS = "status";
+    public static final String MESSAGE = "message";
 }

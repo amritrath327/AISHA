@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -34,14 +35,22 @@ import com.cybercareinfoways.helpers.WebApi;
 import com.cybercareinfoways.webapihelpers.ProfileResponse;
 import com.cybercareinfoways.webapihelpers.SimpleWebRequest;
 import com.cybercareinfoways.webapihelpers.SimpleWebResponse;
-import com.cybercareinfoways.webapihelpers.UpdateProfileRequest;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -258,42 +267,45 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void callUploadWebservice() {
-        dialog = AishaUtilities.showProgressDialog(getActivity(), AishaConstants.UPDATEPROFILEMSG);
-        dialog.show();
-        String userName = etName.getText().toString();
-        UpdateProfileRequest req = new UpdateProfileRequest(userId, userName);
-        if (bm != null) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] imageBytes = baos.toByteArray();
-            String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-            req.setImage(encodedImage);
-        } else {
-            req.setImage("");
-        }
-        Log.i(userId, req.getImage());
-        WebApi api = AishaUtilities.setupRetrofit();
-        updateProfileCall = api.updateProfile(req);
-        updateProfileCall.enqueue(new Callback<SimpleWebResponse>() {
-            @Override
-            public void onResponse(Call<SimpleWebResponse> call, Response<SimpleWebResponse> response) {
-                dialog.dismiss();
-                Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Call<SimpleWebResponse> call, Throwable t) {
-                dialog.dismiss();
-                Snackbar snackbar = Snackbar.make(etName, AishaConstants.UPDATEPROFILEERROR, Snackbar.LENGTH_LONG);
-                snackbar.setActionTextColor(Color.RED);
-                // Changing action button text color
-                View sbView = snackbar.getView();
-                TextView tvMessage = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
-                tvMessage.setTextColor(Color.YELLOW);
-                snackbar.show();
-            }
-        });
+    //    private void callUploadWebservice() {
+//        dialog = AishaUtilities.showProgressDialog(getActivity(), AishaConstants.UPDATEPROFILEMSG);
+//        dialog.show();
+//        String userName = etName.getText().toString();
+//        UpdateProfileRequest req = new UpdateProfileRequest(userId, userName);
+//        if (bm != null) {
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+//            byte[] imageBytes = baos.toByteArray();
+//            String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//            req.setImage(encodedImage);
+//        } else {
+//            req.setImage("");
+//        }
+//        Log.i(userId, req.getImage());
+//        WebApi api = AishaUtilities.setupRetrofit();
+//        updateProfileCall = api.updateProfile(req);
+//        updateProfileCall.enqueue(new Callback<SimpleWebResponse>() {
+//            @Override
+//            public void onResponse(Call<SimpleWebResponse> call, Response<SimpleWebResponse> response) {
+//                dialog.dismiss();
+//                Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<SimpleWebResponse> call, Throwable t) {
+//                dialog.dismiss();
+//                Snackbar snackbar = Snackbar.make(etName, AishaConstants.UPDATEPROFILEERROR, Snackbar.LENGTH_LONG);
+//                snackbar.setActionTextColor(Color.RED);
+//                // Changing action button text color
+//                View sbView = snackbar.getView();
+//                TextView tvMessage = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+//                tvMessage.setTextColor(Color.YELLOW);
+//                snackbar.show();
+//            }
+//        });
+//    }
+    public void callUploadWebservice() {
+        new UpdateProfileTask().execute();
     }
 
     @Override
@@ -304,6 +316,71 @@ public class ProfileFragment extends Fragment {
         }
         if (updateProfileCall != null && !updateProfileCall.isExecuted()) {
             updateProfileCall.cancel();
+        }
+    }
+
+    private class UpdateProfileTask extends AsyncTask<Void, Void, String> {
+        String name;
+        String image = "";
+        ProgressDialog dialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            dialog = AishaUtilities.showProgressDialog(getActivity(), AishaConstants.UPDATEPROFILEMSG);
+            dialog.show();
+            name = etName.getText().toString();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            dialog.dismiss();
+            try {
+                JSONObject res = new JSONObject(s);
+                Toast.makeText(getActivity(), res.getString(AishaConstants.MESSAGE), Toast.LENGTH_SHORT).show();
+            } catch (NullPointerException e) {
+                Toast.makeText(getActivity(), "Please try again", Toast.LENGTH_SHORT).show();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        protected String doInBackground(Void... bitmaps) {
+            if (bm != null) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                byte[] imageBytes = baos.toByteArray();
+                image = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+            }
+            JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put(AishaConstants.USERID, userId);
+                jsonObject.put("name", name);
+                jsonObject.put("image", image);
+                Log.i("request", jsonObject.toString());
+                URL myUrl = new URL(AishaConstants.BASEURL + "profile_update");
+                HttpsURLConnection connection = (HttpsURLConnection) myUrl.openConnection();
+                connection.setDoInput(true);
+                connection.setDoOutput(true);
+                connection.getOutputStream().write(jsonObject.toString().getBytes());
+                InputStream is = connection.getInputStream();
+                String response = AishaUtilities.convertToString(is);
+
+                Log.i("response", response);
+                return response;
+            } catch (JSONException e) {
+                return null;
+            } catch (SocketTimeoutException e) {
+                return null;
+            } catch (MalformedURLException e) {
+                return null;
+            } catch (IOException e) {
+                return null;
+            }
+
         }
     }
 }
