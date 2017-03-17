@@ -52,4 +52,5 @@ public class AishaConstants {
     public static final String MESSAGE = "message";
     public static final String EXTRA_ZIPPR = "EXTRA_ZIPPR";
     public static final String EXTRA_ZIPPR_CODE = "EXTRA_ZIPPR_CODE";
+    public static final String SEARCHCODEMSG = "Searching Location..";
 }

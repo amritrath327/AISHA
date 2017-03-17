@@ -1,9 +1,10 @@
 package com.cybercareinfoways.aisha.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -29,11 +30,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SearchAishaCodeActivity extends AppCompatActivity {
-     @BindView(R.id.toolbar)
-     Toolbar toolbar;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    Call<ZipprCodeResponse> callCodeResponse;
+    ProgressDialog dialog;
     private String userId;
     private WebApi codeApi;
-    Call<ZipprCodeResponse> callCodeResponse;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,30 +52,39 @@ public class SearchAishaCodeActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.code_serach_menu,menu);
+        getMenuInflater().inflate(R.menu.code_serach_menu, menu);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.item_search));
         searchView.setQueryHint("Search by Aisha Code...");
-        EditText editText = (EditText)searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        EditText editText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
         editText.setTextColor(getResources().getColor(R.color.white));
         editText.setHintTextColor(getResources().getColor(R.color.white));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                if (AishaUtilities.isConnectingToInternet(SearchAishaCodeActivity.this)) {
+                    if (query.length() == 6) {
+                        searchAsihaGeneratedCode(query);
+                    } else {
+                        Toast.makeText(SearchAishaCodeActivity.this, "Please enter 6 digit generated code", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(SearchAishaCodeActivity.this, AishaConstants.NETWORK_CONNECTION, Toast.LENGTH_SHORT).show();
+                }
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (AishaUtilities.isConnectingToInternet(SearchAishaCodeActivity.this)) {
-                    if (newText.length()==6) {
+                    if (newText.length() == 6) {
                         searchAsihaGeneratedCode(newText);
-                    }else {
+                    } else {
                         Toast.makeText(SearchAishaCodeActivity.this, "Please enter 6 digit generated code", Toast.LENGTH_SHORT).show();
                     }
-                }else {
-                    Toast.makeText(SearchAishaCodeActivity.this, AishaConstants.NETWORK_CONNECTION,Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(SearchAishaCodeActivity.this, AishaConstants.NETWORK_CONNECTION, Toast.LENGTH_SHORT).show();
                 }
-                return false;
+                return true;
             }
         });
         searchView.setIconified(false);
@@ -82,15 +94,18 @@ public class SearchAishaCodeActivity extends AppCompatActivity {
     }
 
     private void searchAsihaGeneratedCode(final String newText) {
-        Map<String,String> mapCode = new HashMap<>(2);
-        mapCode.put("user_id",userId);
-        mapCode.put("zipper_code",newText.toUpperCase());
+        dialog = AishaUtilities.showProgressDialog(SearchAishaCodeActivity.this, AishaConstants.SEARCHCODEMSG);
+        dialog.show();
+        Map<String, String> mapCode = new HashMap<>(2);
+        mapCode.put("user_id", userId);
+        mapCode.put("zipper_code", newText.toUpperCase());
         callCodeResponse = codeApi.getAddressFromCode(mapCode);
         callCodeResponse.enqueue(new Callback<ZipprCodeResponse>() {
             @Override
             public void onResponse(Call<ZipprCodeResponse> call, Response<ZipprCodeResponse> response) {
-                if (response.isSuccessful()){
-                    if (response.body().getStatus()==1){
+                dialog.dismiss();
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
                         Toast.makeText(SearchAishaCodeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         ZipprCodeResponse zipprCodeResponse = new ZipprCodeResponse();
                         zipprCodeResponse.setLatitude(response.body().getLatitude());
@@ -108,25 +123,26 @@ public class SearchAishaCodeActivity extends AppCompatActivity {
                         }
                         zipprCodeResponse.setImage_status(response.body().getImage_status());
                         zipprCodeResponse.setImage_url(response.body().getImage_url());
-                        Intent intent =new Intent(SearchAishaCodeActivity.this,ZipprFoundActivity.class);
+                        Intent intent = new Intent(SearchAishaCodeActivity.this, ZipprFoundActivity.class);
                         intent.putExtra(AishaConstants.EXTRA_ZIPPR, zipprCodeResponse);
-                        intent.putExtra(AishaConstants.EXTRA_ZIPPR_CODE,newText);
+                        intent.putExtra(AishaConstants.EXTRA_ZIPPR_CODE, newText);
                         startActivity(intent);
 
-                    }else {
+                    } else {
                         Toast.makeText(SearchAishaCodeActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                } else {
                     Toast.makeText(SearchAishaCodeActivity.this, "Code not found,Please tryagain", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ZipprCodeResponse> call, Throwable t) {
-                if (t instanceof SocketTimeoutException){
+                dialog.dismiss();
+                if (t instanceof SocketTimeoutException) {
                     Toast.makeText(SearchAishaCodeActivity.this, "Connection timeout", Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.v("ERROR",t.getMessage());
+                } else {
+                    Log.v("ERROR", t.getMessage());
                 }
             }
         });
@@ -135,7 +151,7 @@ public class SearchAishaCodeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
-        if (item.getItemId()==android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
