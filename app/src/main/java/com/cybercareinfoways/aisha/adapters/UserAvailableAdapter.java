@@ -16,6 +16,7 @@ import com.cybercareinfoways.aisha.activities.HomeActivity;
 import com.cybercareinfoways.aisha.activities.NewContactsActivity;
 import com.cybercareinfoways.aisha.fragments.ContactsFragment;
 import com.cybercareinfoways.aisha.model.UserData;
+import com.cybercareinfoways.helpers.UserClickListener;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
@@ -31,12 +32,16 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
     private Context context;
     private ArrayList<UserData> availableUserList;
     private Picasso picasso;
+    private UserClickListener userClickListener;
 
 
     public UserAvailableAdapter(Context context, ArrayList<UserData> availableUserList) {
         this.context = context;
         this.availableUserList = availableUserList;
         picasso = Picasso.with(context);
+    }
+    public void setOnUSerClicked(UserClickListener uSerClicked){
+        this.userClickListener = uSerClicked;
     }
 
     @Override
@@ -57,7 +62,6 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         }
         holder.txtavailableUserMobile.setText(userData.getMobile());
         holder.txtAvailableUserStatus.setText("" + userData.getImage_status());
-        //for (int i = 0; i<availableUserList.size();i++){
         if (context instanceof ContactsActivity) {
             holder.txtNamefromNumber.setText(((ContactsActivity) context).getNameFromNumber(availableUserList.get(position).getMobile()));
         }
@@ -67,7 +71,6 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         if (context instanceof HomeActivity) {
             holder.txtNamefromNumber.setText(((ContactsFragment) ((HomeActivity) context).getSupportFragmentManager().findFragmentByTag("ContactFrag")).getNameFromNumber(availableUserList.get(position).getMobile()));
         }
-        //}
     }
 
     @Override
@@ -75,7 +78,7 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         return availableUserList.size();
     }
 
-    public class UserAvialableViewHolder extends RecyclerView.ViewHolder {
+    public class UserAvialableViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imgAvailableUserPic;
         TextView txtavailableUserMobile, txtAvailableUserStatus, txtNamefromNumber;
         LinearLayout user_avialable_layout;
@@ -89,29 +92,14 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
             user_avialable_layout = (LinearLayout) itemView.findViewById(R.id.user_avialable_layout);
             txtNamefromNumber = (TextView) itemView.findViewById(R.id.txtNamefromNumber);
             textViews = new LinkedList<>();
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (userClickListener!=null){
+                userClickListener.onUserCliked(v,getAdapterPosition());
+            }
         }
     }
-//    public String getContactName(final String phoneNumber) {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                ContentResolver cr = context.getContentResolver();
-//                Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
-//                Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
-//                if (cursor == null) {
-//                    return;
-//                }
-//                String contactName = null;
-//                if(cursor.moveToFirst()) {
-//                    contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
-//                }
-//
-//                if(cursor != null && !cursor.isClosed()) {
-//                    cursor.close();
-//                }
-//
-//            }
-//        }).start();
-//
-//    }
 }

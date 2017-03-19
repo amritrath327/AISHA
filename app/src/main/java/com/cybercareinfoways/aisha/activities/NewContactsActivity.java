@@ -30,17 +30,21 @@ import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
 import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
+import com.cybercareinfoways.helpers.UserClickListener;
 import com.cybercareinfoways.helpers.WebApi;
+import com.cybercareinfoways.webapihelpers.UniversalResponse;
 
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NewContactsActivity extends AppCompatActivity {
+public class NewContactsActivity extends AppCompatActivity implements UserClickListener {
     private static final int READCONTACT_CODE = 201;
     ProgressDialog dilogAvailableUser;
     private ArrayList<Contacts> cotactList, contactDataList;
@@ -52,6 +56,7 @@ public class NewContactsActivity extends AppCompatActivity {
     private RecyclerView rcvAvailableUsers;
     private TextView txtNocontact;
     private UserAvailableAdapter userAvailableAdapter;
+    private Call<UniversalResponse> universalResponseCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +114,7 @@ public class NewContactsActivity extends AppCompatActivity {
                         if (userAvilableList!=null && userAvilableList.size()>0){
                             userAvailableAdapter  = new UserAvailableAdapter(NewContactsActivity.this,userAvilableList);
                             rcvAvailableUsers.setAdapter(userAvailableAdapter);
+                            userAvailableAdapter.setOnUSerClicked(NewContactsActivity.this);
                             txtNocontact.setVisibility(View.GONE);
                         }else {
                             txtNocontact.setVisibility(View.VISIBLE);
@@ -182,6 +188,38 @@ public class NewContactsActivity extends AppCompatActivity {
         }
 
         return contactName;
+    }
+
+    @Override
+    public void onUserCliked(View view, int position) {
+        UserData userData = userAvilableList.get(position);
+        Map<String,String> mapSendLocation = new HashMap<>(3);
+        mapSendLocation.put(AishaConstants.USERID,userId);
+        mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER,userData.getMobile());
+        mapSendLocation.put(AishaConstants.EXTRA_DURATION,"30min");
+        universalResponseCall = webApi.sendLocationRequest(mapSendLocation);
+        universalResponseCall.enqueue(new Callback<UniversalResponse>() {
+            @Override
+            public void onResponse(Call<UniversalResponse> call, Response<UniversalResponse> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()==1){
+                        Toast.makeText(NewContactsActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(NewContactsActivity.this, "Please tryagain.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UniversalResponse> call, Throwable t) {
+                if (t instanceof SocketTimeoutException){
+                    Toast.makeText(NewContactsActivity.this, "Conection timeout", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Log.v("ERROR",t.getMessage());
+                }
+            }
+        });
     }
 
     public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>>{

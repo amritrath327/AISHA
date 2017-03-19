@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
@@ -48,7 +49,9 @@ import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.OnItemClickListner;
 import com.cybercareinfoways.helpers.TextDrawable;
+import com.cybercareinfoways.helpers.UserClickListener;
 import com.cybercareinfoways.helpers.WebApi;
+import com.cybercareinfoways.webapihelpers.UniversalResponse;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.model.ShareLinkContent;
@@ -59,6 +62,8 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import bolts.AppLinks;
 import butterknife.BindView;
@@ -71,7 +76,7 @@ import retrofit2.Response;
  * Created by YELOWFLASH on 03/11/2017.
  */
 
-public class ContactsFragment extends Fragment implements View.OnClickListener {
+public class ContactsFragment extends Fragment implements View.OnClickListener, UserClickListener {
     protected static final int CAMERA_REQUEST = 0;
     protected static final int GALLERY_REQUEST = 1;
     private static final int READCONTACT_CODE = 201;
@@ -117,31 +122,12 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
     private String appLinkUrl;
     private String userName;
     private Call<UserResponse> userResponseCall;
+    private Call<UniversalResponse> universalResponseCall;
     private WebApi webApi;
     private String userId;
     private UserAvailableAdapter userAvailableAdapter;
 
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
 
-        if (height > reqHeight || width > reqWidth) {
-
-            final int halfHeight = height / 2;
-            final int halfWidth = width / 2;
-
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
-            while ((halfHeight / inSampleSize) > reqHeight
-                    && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
-            }
-        }
-        return inSampleSize;
-    }
 
     @Nullable
     @Override
@@ -402,15 +388,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
         ArrayList<Contacts> contactses = new ArrayList<>(contactsDataList.size());
         for (int i = 0; i < contactsDataList.size(); i++) {
             Contacts contacts = new Contacts();
-            //contacts.setMobile("9668452233");
-//            if (contactsDataList.get(i).getMobile().length()>0) {
-//                contacts.setMobile(contactsDataList.get(i).getMobile().substring(contactsDataList.get(i).getMobile().length() - 10).toString());
-//            }else {
             contacts.setMobile(contactsDataList.get(i).getMobile());
-//            }
+            //contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
-        //}
         userRequest.setContacts(contactses);
         userResponseCall = webApi.getAvailableUser(userRequest);
         userResponseCall.enqueue(new Callback<UserResponse>() {
@@ -426,6 +407,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
                         if (userAvilableList != null && userAvilableList.size() > 0) {
                             userAvailableAdapter = new UserAvailableAdapter(getActivity(), userAvilableList);
                             rcvAvailableUsers.setAdapter(userAvailableAdapter);
+                            userAvailableAdapter.setOnUSerClicked(ContactsFragment.this);
                         } else {
                             Toast.makeText(getActivity(), "No AISHA contacts found.", Toast.LENGTH_SHORT).show();
                             txtCircularContacts.setText("0");
@@ -462,6 +444,38 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
             userResponseCall.cancel();
         }
         super.onStop();
+    }
+
+    @Override
+    public void onUserCliked(View view, int position) {
+        UserData userData = userAvilableList.get(position);
+        Map<String,String> mapSendLocation = new HashMap<>(3);
+        mapSendLocation.put(AishaConstants.USERID,userId);
+        mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER,userData.getMobile());
+        mapSendLocation.put(AishaConstants.EXTRA_DURATION,"30min");
+        universalResponseCall = webApi.sendLocationRequest(mapSendLocation);
+        universalResponseCall.enqueue(new Callback<UniversalResponse>() {
+            @Override
+            public void onResponse(Call<UniversalResponse> call, Response<UniversalResponse> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()==1){
+                        Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(getActivity(), "Please tryagain.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UniversalResponse> call, Throwable t) {
+                if (t instanceof SocketTimeoutException){
+                    Toast.makeText(getActivity(), "Conection timeout", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Log.v("ERROR",t.getMessage());
+                }
+            }
+        });
     }
 
     public class ContactTask extends AsyncTask<Void, Void, ArrayList<Contacts>> implements OnItemClickListner {
@@ -549,11 +563,32 @@ public class ContactsFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void OnItemClick(View view, int pos) {
-            Contacts contacts = contactsDataList.get(pos);
-            Intent intent = new Intent(getActivity(), InvitationActivity.class);
-            intent.putExtra(AishaConstants.EXTRA_INVITATION, contacts);
-            startActivity(intent);
+                Contacts contacts = contactsDataList.get(pos);
+                Intent intent = new Intent(getActivity(), InvitationActivity.class);
+                intent.putExtra(AishaConstants.EXTRA_INVITATION, contacts);
+                startActivity(intent);
         }
+    }
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+        return inSampleSize;
     }
 
 
