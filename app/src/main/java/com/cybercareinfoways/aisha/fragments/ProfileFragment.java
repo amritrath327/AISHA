@@ -363,6 +363,8 @@ public class ProfileFragment extends Fragment {
                 Log.i("request", jsonObject.toString());
                 URL myUrl = new URL(AishaConstants.BASEURL + "profile_update");
                 HttpsURLConnection connection = (HttpsURLConnection) myUrl.openConnection();
+                connection.setRequestProperty("Content-Type","application/json");
+                connection.setRequestProperty("Accept","application/json");
                 connection.setDoInput(true);
                 connection.setDoOutput(true);
                 connection.getOutputStream().write(jsonObject.toString().getBytes());
