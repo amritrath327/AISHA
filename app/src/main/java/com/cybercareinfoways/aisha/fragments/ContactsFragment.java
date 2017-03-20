@@ -2,6 +2,7 @@ package com.cybercareinfoways.aisha.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -20,7 +21,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,15 +30,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.InvitationActivity;
+import com.cybercareinfoways.aisha.activities.NewContactsActivity;
 import com.cybercareinfoways.aisha.adapters.ContactAdapter;
 import com.cybercareinfoways.aisha.adapters.UserAvailableAdapter;
 import com.cybercareinfoways.aisha.model.Contacts;
@@ -51,7 +55,7 @@ import com.cybercareinfoways.helpers.OnItemClickListner;
 import com.cybercareinfoways.helpers.TextDrawable;
 import com.cybercareinfoways.helpers.UserClickListener;
 import com.cybercareinfoways.helpers.WebApi;
-import com.cybercareinfoways.webapihelpers.UniversalResponse;
+import com.cybercareinfoways.webapihelpers.LocationRequestResponse;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.model.ShareLinkContent;
@@ -122,10 +126,11 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     private String appLinkUrl;
     private String userName;
     private Call<UserResponse> userResponseCall;
-    private Call<UniversalResponse> universalResponseCall;
+    private Call<LocationRequestResponse> locationSharingResponseCall;
     private WebApi webApi;
     private String userId;
     private UserAvailableAdapter userAvailableAdapter;
+    private int durationTime;
 
 
 
@@ -447,17 +452,62 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onUserCliked(View view, int position) {
-        UserData userData = userAvilableList.get(position);
+    public void onUserCliked(View view,final int position) {
+        final Dialog durationDilog = new Dialog(getActivity());
+        durationDilog.setContentView(R.layout.duration_layout);
+        RadioGroup durationGroup = (RadioGroup)durationDilog.findViewById(R.id.duration_group);
+        final RadioButton rbtn_Fifteen= (RadioButton)durationDilog.findViewById(R.id.rbtn_fifteen);
+        final RadioButton rbtn_thirty = (RadioButton)durationDilog.findViewById(R.id.rbtn_thirty);
+        final RadioButton rbtn_fortyFive= (RadioButton)durationDilog.findViewById(R.id.rbtn_fortyfive);
+        final RadioButton rbtn_Sixty = (RadioButton)durationDilog.findViewById(R.id.rbtn_sixty);
+        Button btnRequest = (Button)durationDilog.findViewById(R.id.btnRequest);
+        durationGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId==R.id.rbtn_fifteen){
+                    durationTime = 15;
+                    rbtn_Fifteen.setChecked(true);
+                }
+                if (checkedId==R.id.rbtn_thirty){
+                    durationTime = 30;
+                    rbtn_thirty.setChecked(true);
+                }
+                if (checkedId==R.id.rbtn_fortyfive){
+                    durationTime = 45;
+                    rbtn_fortyFive.setChecked(true);
+                }
+                if (checkedId==R.id.rbtn_sixty){
+                    durationTime = 60;
+                    rbtn_Sixty.setChecked(true);
+                }
+            }
+        });
+        durationDilog.show();
+        btnRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()){
+                    requestLocation(durationTime,durationDilog,position);
+                }else {
+                    Toast.makeText(getActivity(), "Please select time duration", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+    private void requestLocation(int durationTime, final Dialog durationDilog, int pos) {
+        UserData userData = userAvilableList.get(pos);
         Map<String,String> mapSendLocation = new HashMap<>(3);
         mapSendLocation.put(AishaConstants.USERID,userId);
         mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER,userData.getMobile());
-        mapSendLocation.put(AishaConstants.EXTRA_DURATION,"30min");
-        universalResponseCall = webApi.sendLocationRequest(mapSendLocation);
-        universalResponseCall.enqueue(new Callback<UniversalResponse>() {
+        mapSendLocation.put(AishaConstants.EXTRA_DURATION,""+durationTime);
+        locationSharingResponseCall = webApi.sendLocationRequest(mapSendLocation);
+        locationSharingResponseCall.enqueue(new Callback<LocationRequestResponse>() {
             @Override
-            public void onResponse(Call<UniversalResponse> call, Response<UniversalResponse> response) {
+            public void onResponse(Call<LocationRequestResponse> call, Response<LocationRequestResponse> response) {
                 if (response.isSuccessful()){
+                    if (durationDilog.isShowing()){
+                        durationDilog.dismiss();
+                    }
                     if (response.body().getStatus()==1){
                         Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }else {
@@ -467,7 +517,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
             }
 
             @Override
-            public void onFailure(Call<UniversalResponse> call, Throwable t) {
+            public void onFailure(Call<LocationRequestResponse> call, Throwable t) {
+                if (durationDilog.isShowing()){
+                    durationDilog.dismiss();
+                }
                 if (t instanceof SocketTimeoutException){
                     Toast.makeText(getActivity(), "Conection timeout", Toast.LENGTH_SHORT).show();
                 }

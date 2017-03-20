@@ -1,6 +1,7 @@
 package com.cybercareinfoways.aisha.activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
@@ -19,6 +20,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +36,7 @@ import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.UserClickListener;
 import com.cybercareinfoways.helpers.WebApi;
-import com.cybercareinfoways.webapihelpers.UniversalResponse;
+import com.cybercareinfoways.webapihelpers.LocationRequestResponse;
 
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
@@ -56,7 +60,8 @@ public class NewContactsActivity extends AppCompatActivity implements UserClickL
     private RecyclerView rcvAvailableUsers;
     private TextView txtNocontact;
     private UserAvailableAdapter userAvailableAdapter;
-    private Call<UniversalResponse> universalResponseCall;
+    private Call<LocationRequestResponse> locationSharingResponseCall;
+    private int durationTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,15 +96,10 @@ public class NewContactsActivity extends AppCompatActivity implements UserClickL
         ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
-            //contacts.setMobile("9668452233");
-//            if (contactDataList.get(i).getMobile().length()>10) {
-//                contacts.setMobile(contactDataList.get(i).getMobile().substring(contactDataList.get(i).getMobile().length() - 10));
-//            }else {
-                contacts.setMobile(contactDataList.get(i).getMobile());
-//            }
+            contacts.setMobile(contactDataList.get(i).getMobile());
+            //contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
-        //}
         userRequest.setContacts(contactses);
         userResponseCall = webApi.getAvailableUser(userRequest);
         userResponseCall.enqueue(new Callback<UserResponse>() {
@@ -191,17 +191,63 @@ public class NewContactsActivity extends AppCompatActivity implements UserClickL
     }
 
     @Override
-    public void onUserCliked(View view, int position) {
-        UserData userData = userAvilableList.get(position);
+    public void onUserCliked(View view, final int position) {
+        final Dialog durationDilog = new Dialog(NewContactsActivity.this);
+        durationDilog.setContentView(R.layout.duration_layout);
+        RadioGroup durationGroup = (RadioGroup)durationDilog.findViewById(R.id.duration_group);
+        final RadioButton rbtn_Fifteen= (RadioButton)durationDilog.findViewById(R.id.rbtn_fifteen);
+        final RadioButton rbtn_thirty = (RadioButton)durationDilog.findViewById(R.id.rbtn_thirty);
+        final RadioButton rbtn_fortyFive= (RadioButton)durationDilog.findViewById(R.id.rbtn_fortyfive);
+        final RadioButton rbtn_Sixty = (RadioButton)durationDilog.findViewById(R.id.rbtn_sixty);
+        Button btnRequest = (Button)durationDilog.findViewById(R.id.btnRequest);
+        durationGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId==R.id.rbtn_fifteen){
+                    durationTime = 15;
+                    rbtn_Fifteen.setChecked(true);
+                }
+                if (checkedId==R.id.rbtn_thirty){
+                    durationTime = 30;
+                    rbtn_thirty.setChecked(true);
+                }
+                if (checkedId==R.id.rbtn_fortyfive){
+                    durationTime = 45;
+                    rbtn_fortyFive.setChecked(true);
+                }
+                if (checkedId==R.id.rbtn_sixty){
+                    durationTime = 60;
+                    rbtn_Sixty.setChecked(true);
+                }
+            }
+        });
+        durationDilog.show();
+        btnRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()){
+                    requestLocation(durationTime,durationDilog,position);
+                }else {
+                    Toast.makeText(NewContactsActivity.this, "Please select time duration", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void requestLocation(int durationTime, final Dialog durationDilog, int pos) {
+        UserData userData = userAvilableList.get(pos);
         Map<String,String> mapSendLocation = new HashMap<>(3);
         mapSendLocation.put(AishaConstants.USERID,userId);
         mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER,userData.getMobile());
-        mapSendLocation.put(AishaConstants.EXTRA_DURATION,"30min");
-        universalResponseCall = webApi.sendLocationRequest(mapSendLocation);
-        universalResponseCall.enqueue(new Callback<UniversalResponse>() {
+        mapSendLocation.put(AishaConstants.EXTRA_DURATION,""+durationTime);
+        locationSharingResponseCall = webApi.sendLocationRequest(mapSendLocation);
+        locationSharingResponseCall.enqueue(new Callback<LocationRequestResponse>() {
             @Override
-            public void onResponse(Call<UniversalResponse> call, Response<UniversalResponse> response) {
+            public void onResponse(Call<LocationRequestResponse> call, Response<LocationRequestResponse> response) {
                 if (response.isSuccessful()){
+                    if (durationDilog.isShowing()){
+                        durationDilog.dismiss();
+                    }
                     if (response.body().getStatus()==1){
                         Toast.makeText(NewContactsActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }else {
@@ -211,7 +257,10 @@ public class NewContactsActivity extends AppCompatActivity implements UserClickL
             }
 
             @Override
-            public void onFailure(Call<UniversalResponse> call, Throwable t) {
+            public void onFailure(Call<LocationRequestResponse> call, Throwable t) {
+                if (durationDilog.isShowing()){
+                    durationDilog.dismiss();
+                }
                 if (t instanceof SocketTimeoutException){
                     Toast.makeText(NewContactsActivity.this, "Conection timeout", Toast.LENGTH_SHORT).show();
                 }

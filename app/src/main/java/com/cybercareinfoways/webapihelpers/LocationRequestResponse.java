@@ -5,9 +5,19 @@ package com.cybercareinfoways.webapihelpers;
  * Created by Nutan on 20-03-2017.
  */
 
-public class UniversalResponse {
+public class LocationRequestResponse {
     private int status;
     private String message;
+
+    public String getLocaton_sharing_id() {
+        return locaton_sharing_id;
+    }
+
+    public void setLocaton_sharing_id(String locaton_sharing_id) {
+        this.locaton_sharing_id = locaton_sharing_id;
+    }
+
+    private String locaton_sharing_id;
 
     public int getStatus() {
         return status;

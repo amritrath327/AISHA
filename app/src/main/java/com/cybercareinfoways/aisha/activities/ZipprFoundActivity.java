@@ -54,6 +54,7 @@ public class ZipprFoundActivity extends AppCompatActivity implements OnMapReadyC
     @BindView(R.id.imgShareemail)
     ImageView imgShareemail;
     String appLinkUrl;
+    private String addressString;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,8 +74,10 @@ public class ZipprFoundActivity extends AppCompatActivity implements OnMapReadyC
         txtcode.setText(zipprCode);
         if (zipprCodeResponse.getAddress_type().equals("1")){
             txtZipprAddress.setText(zipprCodeResponse.getAddress_line());
+            addressString=zipprCodeResponse.getAddress_line();
         }else {
             txtZipprAddress.setText(zipprCodeResponse.getAddress_name()+","+ zipprCodeResponse.getPlot_number()+","+ zipprCodeResponse.getCity()+","+ zipprCodeResponse.getState()+","+ zipprCodeResponse.getPincode());
+            addressString=zipprCodeResponse.getAddress_name()+","+ zipprCodeResponse.getPlot_number()+","+ zipprCodeResponse.getCity()+","+ zipprCodeResponse.getState()+","+ zipprCodeResponse.getPincode();
         }
         supportMapFragment=new SupportMapFragment();
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -116,8 +119,9 @@ public class ZipprFoundActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         LatLng zipprLocation = new LatLng(zipprCodeResponse.getLatitude(), zipprCodeResponse.getLongitude());
-        googleMap.addMarker(new MarkerOptions().position(zipprLocation).title(""));
+        googleMap.addMarker(new MarkerOptions().position(zipprLocation).title(addressString));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(zipprLocation));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
     @Override
