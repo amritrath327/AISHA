@@ -133,7 +133,6 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     private int durationTime;
 
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -452,33 +451,95 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onUserCliked(View view,final int position) {
+    public void onUserCliked(View view, final int position) {
         final Dialog durationDilog = new Dialog(getActivity());
         durationDilog.setContentView(R.layout.duration_layout);
-        RadioGroup durationGroup = (RadioGroup)durationDilog.findViewById(R.id.duration_group);
-        final RadioButton rbtn_Fifteen= (RadioButton)durationDilog.findViewById(R.id.rbtn_fifteen);
-        final RadioButton rbtn_thirty = (RadioButton)durationDilog.findViewById(R.id.rbtn_thirty);
-        final RadioButton rbtn_fortyFive= (RadioButton)durationDilog.findViewById(R.id.rbtn_fortyfive);
-        final RadioButton rbtn_Sixty = (RadioButton)durationDilog.findViewById(R.id.rbtn_sixty);
-        Button btnRequest = (Button)durationDilog.findViewById(R.id.btnRequest);
+        final RadioGroup durationGroup = (RadioGroup) durationDilog.findViewById(R.id.duration_group);
+        final RadioGroup durationGroup2 = (RadioGroup) durationDilog.findViewById(R.id.duration_group2);
+        final RadioButton rbtn_Fifteen = (RadioButton) durationDilog.findViewById(R.id.rbtn_fifteen);
+        final RadioButton rbtn_thirty = (RadioButton) durationDilog.findViewById(R.id.rbtn_thirty);
+        final RadioButton rbtn_fortyFive = (RadioButton) durationDilog.findViewById(R.id.rbtn_fortyfive);
+        final RadioButton rbtn_Sixty = (RadioButton) durationDilog.findViewById(R.id.rbtn_sixty);
+        Button btnRequest = (Button) durationDilog.findViewById(R.id.btnRequest);
         durationGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId==R.id.rbtn_fifteen){
-                    durationTime = 15;
-                    rbtn_Fifteen.setChecked(true);
+//                if (checkedId==R.id.rbtn_fifteen){
+//                    durationTime = 15;
+//                    rbtn_Fifteen.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_thirty){
+//                    durationTime = 30;
+//                    rbtn_thirty.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_fortyfive){
+//                    durationTime = 45;
+//                    rbtn_fortyFive.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_sixty){
+//                    durationTime = 60;
+//                    rbtn_Sixty.setChecked(true);
+//                }
+                switch (checkedId) {
+                    case R.id.rbtn_fifteen:
+                        durationTime = 15;
+                        durationGroup2.clearCheck();
+                        break;
+                    case R.id.rbtn_thirty:
+                        durationTime = 30;
+                        durationGroup2.clearCheck();
+                        break;
+                    case R.id.rbtn_fortyfive:
+                        durationTime = 45;
+                        durationGroup2.clearCheck();
+                        break;
+                    case R.id.rbtn_sixty:
+                        durationTime = 60;
+                        durationGroup2.clearCheck();
+
+                        break;
+
                 }
-                if (checkedId==R.id.rbtn_thirty){
-                    durationTime = 30;
-                    rbtn_thirty.setChecked(true);
-                }
-                if (checkedId==R.id.rbtn_fortyfive){
-                    durationTime = 45;
-                    rbtn_fortyFive.setChecked(true);
-                }
-                if (checkedId==R.id.rbtn_sixty){
-                    durationTime = 60;
-                    rbtn_Sixty.setChecked(true);
+            }
+        });
+
+        durationGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId==R.id.rbtn_fifteen){
+//                    durationTime = 15;
+//                    rbtn_Fifteen.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_thirty){
+//                    durationTime = 30;
+//                    rbtn_thirty.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_fortyfive){
+//                    durationTime = 45;
+//                    rbtn_fortyFive.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_sixty){
+//                    durationTime = 60;
+//                    rbtn_Sixty.setChecked(true);
+//                }
+                switch (checkedId) {
+                    case R.id.rbtn_2hr:
+                        durationTime = 120;
+                        durationGroup.clearCheck();
+                        break;
+                    case R.id.rbtn_3hr:
+                        durationTime = 180;
+                        durationGroup.clearCheck();
+                        break;
+                    case R.id.rbtn_4hr:
+                        durationTime = 240;
+                        durationGroup.clearCheck();
+                        break;
+                    case R.id.rbtn_5hr:
+                        durationTime = 300;
+                        durationGroup.clearCheck();
+                        break;
+
                 }
             }
         });
@@ -486,31 +547,32 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         btnRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()){
-                    requestLocation(durationTime,durationDilog,position);
-                }else {
+                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()) {
+                    requestLocation(durationTime, durationDilog, position);
+                } else {
                     Toast.makeText(getActivity(), "Please select time duration", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
+
     private void requestLocation(int durationTime, final Dialog durationDilog, int pos) {
         UserData userData = userAvilableList.get(pos);
-        Map<String,String> mapSendLocation = new HashMap<>(3);
-        mapSendLocation.put(AishaConstants.USERID,userId);
-        mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER,userData.getMobile());
-        mapSendLocation.put(AishaConstants.EXTRA_DURATION,""+durationTime);
+        Map<String, String> mapSendLocation = new HashMap<>(3);
+        mapSendLocation.put(AishaConstants.USERID, userId);
+        mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER, userData.getMobile());
+        mapSendLocation.put(AishaConstants.EXTRA_DURATION, "" + durationTime);
         locationSharingResponseCall = webApi.sendLocationRequest(mapSendLocation);
         locationSharingResponseCall.enqueue(new Callback<LocationRequestResponse>() {
             @Override
             public void onResponse(Call<LocationRequestResponse> call, Response<LocationRequestResponse> response) {
-                if (response.isSuccessful()){
-                    if (durationDilog.isShowing()){
+                if (response.isSuccessful()) {
+                    if (durationDilog.isShowing()) {
                         durationDilog.dismiss();
                     }
-                    if (response.body().getStatus()==1){
+                    if (response.body().getStatus() == 1) {
                         Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         Toast.makeText(getActivity(), "Please tryagain.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -518,14 +580,13 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
 
             @Override
             public void onFailure(Call<LocationRequestResponse> call, Throwable t) {
-                if (durationDilog.isShowing()){
+                if (durationDilog.isShowing()) {
                     durationDilog.dismiss();
                 }
-                if (t instanceof SocketTimeoutException){
+                if (t instanceof SocketTimeoutException) {
                     Toast.makeText(getActivity(), "Conection timeout", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Log.v("ERROR",t.getMessage());
+                } else {
+                    Log.v("ERROR", t.getMessage());
                 }
             }
         });
@@ -616,12 +677,13 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
 
         @Override
         public void OnItemClick(View view, int pos) {
-                Contacts contacts = contactsDataList.get(pos);
-                Intent intent = new Intent(getActivity(), InvitationActivity.class);
-                intent.putExtra(AishaConstants.EXTRA_INVITATION, contacts);
-                startActivity(intent);
+            Contacts contacts = contactsDataList.get(pos);
+            Intent intent = new Intent(getActivity(), InvitationActivity.class);
+            intent.putExtra(AishaConstants.EXTRA_INVITATION, contacts);
+            startActivity(intent);
         }
     }
+
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
