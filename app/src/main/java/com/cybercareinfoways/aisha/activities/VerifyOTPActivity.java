@@ -88,6 +88,12 @@ public class VerifyOTPActivity extends AppCompatActivity {
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         registerReceiver(otpReceiver, filter);
         generateOtp();
+        btnResendOtp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                generateOtp();
+            }
+        });
     }
 
 

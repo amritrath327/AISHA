@@ -393,7 +393,7 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         for (int i = 0; i < contactsDataList.size(); i++) {
             Contacts contacts = new Contacts();
             contacts.setMobile(contactsDataList.get(i).getMobile());
-            //contacts.setMobile("7504891196");
+            //contacts.setMobile("9668452233");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);
@@ -460,6 +460,10 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         final RadioButton rbtn_thirty = (RadioButton) durationDilog.findViewById(R.id.rbtn_thirty);
         final RadioButton rbtn_fortyFive = (RadioButton) durationDilog.findViewById(R.id.rbtn_fortyfive);
         final RadioButton rbtn_Sixty = (RadioButton) durationDilog.findViewById(R.id.rbtn_sixty);
+        final RadioButton rbtn_2hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_2hr);
+        final RadioButton rbtn_3hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_3hr);
+        final RadioButton rbtn_4hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_4hr);
+        final RadioButton rbtn_5hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_5hr);
         Button btnRequest = (Button) durationDilog.findViewById(R.id.btnRequest);
         durationGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -547,7 +551,8 @@ public class ContactsFragment extends Fragment implements View.OnClickListener, 
         btnRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()) {
+                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()
+                        || rbtn_2hr.isChecked() || rbtn_3hr.isChecked() || rbtn_4hr.isChecked() || rbtn_5hr.isChecked()) {
                     requestLocation(durationTime, durationDilog, position);
                 } else {
                     Toast.makeText(getActivity(), "Please select time duration", Toast.LENGTH_SHORT).show();

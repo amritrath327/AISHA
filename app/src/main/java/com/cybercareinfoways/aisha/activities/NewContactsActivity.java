@@ -97,7 +97,7 @@ public class NewContactsActivity extends AppCompatActivity implements UserClickL
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
             contacts.setMobile(contactDataList.get(i).getMobile());
-            //contacts.setMobile("7504891196");
+            //contacts.setMobile("9668452233");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);
@@ -194,30 +194,95 @@ public class NewContactsActivity extends AppCompatActivity implements UserClickL
     public void onUserCliked(View view, final int position) {
         final Dialog durationDilog = new Dialog(NewContactsActivity.this);
         durationDilog.setContentView(R.layout.duration_layout);
-        RadioGroup durationGroup = (RadioGroup)durationDilog.findViewById(R.id.duration_group);
-        final RadioButton rbtn_Fifteen= (RadioButton)durationDilog.findViewById(R.id.rbtn_fifteen);
-        final RadioButton rbtn_thirty = (RadioButton)durationDilog.findViewById(R.id.rbtn_thirty);
-        final RadioButton rbtn_fortyFive= (RadioButton)durationDilog.findViewById(R.id.rbtn_fortyfive);
-        final RadioButton rbtn_Sixty = (RadioButton)durationDilog.findViewById(R.id.rbtn_sixty);
-        Button btnRequest = (Button)durationDilog.findViewById(R.id.btnRequest);
+        final RadioGroup durationGroup = (RadioGroup) durationDilog.findViewById(R.id.duration_group);
+        final RadioGroup durationGroup2 = (RadioGroup) durationDilog.findViewById(R.id.duration_group2);
+        final RadioButton rbtn_Fifteen = (RadioButton) durationDilog.findViewById(R.id.rbtn_fifteen);
+        final RadioButton rbtn_thirty = (RadioButton) durationDilog.findViewById(R.id.rbtn_thirty);
+        final RadioButton rbtn_fortyFive = (RadioButton) durationDilog.findViewById(R.id.rbtn_fortyfive);
+        final RadioButton rbtn_Sixty = (RadioButton) durationDilog.findViewById(R.id.rbtn_sixty);
+        final RadioButton rbtn_2hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_2hr);
+        final RadioButton rbtn_3hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_3hr);
+        final RadioButton rbtn_4hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_4hr);
+        final RadioButton rbtn_5hr = (RadioButton) durationDilog.findViewById(R.id.rbtn_5hr);
+        Button btnRequest = (Button) durationDilog.findViewById(R.id.btnRequest);
         durationGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId==R.id.rbtn_fifteen){
-                    durationTime = 15;
-                    rbtn_Fifteen.setChecked(true);
+//                if (checkedId==R.id.rbtn_fifteen){
+//                    durationTime = 15;
+//                    rbtn_Fifteen.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_thirty){
+//                    durationTime = 30;
+//                    rbtn_thirty.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_fortyfive){
+//                    durationTime = 45;
+//                    rbtn_fortyFive.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_sixty){
+//                    durationTime = 60;
+//                    rbtn_Sixty.setChecked(true);
+//                }
+                switch (checkedId) {
+                    case R.id.rbtn_fifteen:
+                        durationTime = 15;
+                        durationGroup2.clearCheck();
+                        break;
+                    case R.id.rbtn_thirty:
+                        durationTime = 30;
+                        durationGroup2.clearCheck();
+                        break;
+                    case R.id.rbtn_fortyfive:
+                        durationTime = 45;
+                        durationGroup2.clearCheck();
+                        break;
+                    case R.id.rbtn_sixty:
+                        durationTime = 60;
+                        durationGroup2.clearCheck();
+                        break;
+
                 }
-                if (checkedId==R.id.rbtn_thirty){
-                    durationTime = 30;
-                    rbtn_thirty.setChecked(true);
-                }
-                if (checkedId==R.id.rbtn_fortyfive){
-                    durationTime = 45;
-                    rbtn_fortyFive.setChecked(true);
-                }
-                if (checkedId==R.id.rbtn_sixty){
-                    durationTime = 60;
-                    rbtn_Sixty.setChecked(true);
+            }
+        });
+
+        durationGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId==R.id.rbtn_fifteen){
+//                    durationTime = 15;
+//                    rbtn_Fifteen.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_thirty){
+//                    durationTime = 30;
+//                    rbtn_thirty.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_fortyfive){
+//                    durationTime = 45;
+//                    rbtn_fortyFive.setChecked(true);
+//                }
+//                if (checkedId==R.id.rbtn_sixty){
+//                    durationTime = 60;
+//                    rbtn_Sixty.setChecked(true);
+//                }
+                switch (checkedId) {
+                    case R.id.rbtn_2hr:
+                        durationTime = 120;
+                        durationGroup.clearCheck();
+                        break;
+                    case R.id.rbtn_3hr:
+                        durationTime = 180;
+                        durationGroup.clearCheck();
+                        break;
+                    case R.id.rbtn_4hr:
+                        durationTime = 240;
+                        durationGroup.clearCheck();
+                        break;
+                    case R.id.rbtn_5hr:
+                        durationTime = 300;
+                        durationGroup.clearCheck();
+                        break;
+
                 }
             }
         });
@@ -225,7 +290,8 @@ public class NewContactsActivity extends AppCompatActivity implements UserClickL
         btnRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()){
+                if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()
+                        || rbtn_2hr.isChecked() || rbtn_3hr.isChecked() || rbtn_4hr.isChecked() || rbtn_5hr.isChecked() ){
                     requestLocation(durationTime,durationDilog,position);
                 }else {
                     Toast.makeText(NewContactsActivity.this, "Please select time duration", Toast.LENGTH_SHORT).show();
