@@ -1,32 +1,27 @@
 package com.cybercareinfoways.aisha.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,21 +29,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
-import com.cybercareinfoways.aisha.activities.HomeActivity;
-import com.cybercareinfoways.aisha.activities.InvitationActivity;
 import com.cybercareinfoways.aisha.activities.NewContactsActivity;
-import com.cybercareinfoways.aisha.adapters.ContactAdapter;
 import com.cybercareinfoways.aisha.adapters.UserAvailableAdapter;
 import com.cybercareinfoways.aisha.model.Contacts;
 import com.cybercareinfoways.aisha.model.UserData;
@@ -56,26 +45,16 @@ import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
 import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
-import com.cybercareinfoways.helpers.OnItemClickListner;
-import com.cybercareinfoways.helpers.TextDrawable;
 import com.cybercareinfoways.helpers.UserClickListener;
 import com.cybercareinfoways.helpers.WebApi;
 import com.cybercareinfoways.webapihelpers.LocationRequestResponse;
-import com.facebook.FacebookSdk;
-import com.facebook.share.model.AppInviteContent;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.AppInviteDialog;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import bolts.AppLinks;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -98,6 +77,7 @@ public class ContactsFragment extends Fragment implements UserClickListener {
     private UserAvailableAdapter userAvailableAdapter;
     private Call<LocationRequestResponse> locationSharingResponseCall;
     private int durationTime;
+    private RequestReceiver requestReceiver;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -127,6 +107,7 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         }else{
             getAllContacts();
         }
+        requestReceiver=new RequestReceiver();
         return v;
     }
     private void showAvailableContacts() {
@@ -136,7 +117,7 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
             //contacts.setMobile(contactDataList.get(i).getMobile());
-            contacts.setMobile("9438300507");
+            contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);
@@ -222,6 +203,10 @@ public class ContactsFragment extends Fragment implements UserClickListener {
     @Override
     public void onUserCliked(View view, final int position) {
         final Dialog durationDilog = new Dialog(getActivity());
+        WindowManager.LayoutParams params=durationDilog.getWindow().getAttributes();
+        params.height= ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.width=ViewGroup.LayoutParams.MATCH_PARENT;
+        durationDilog.getWindow().setAttributes(params);
         durationDilog.setContentView(R.layout.duration_layout);
         final RadioGroup durationGroup = (RadioGroup) durationDilog.findViewById(R.id.duration_group);
         final RadioGroup durationGroup2 = (RadioGroup) durationDilog.findViewById(R.id.duration_group2);
@@ -237,22 +222,6 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         durationGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                if (checkedId==R.id.rbtn_fifteen){
-//                    durationTime = 15;
-//                    rbtn_Fifteen.setChecked(true);
-//                }
-//                if (checkedId==R.id.rbtn_thirty){
-//                    durationTime = 30;
-//                    rbtn_thirty.setChecked(true);
-//                }
-//                if (checkedId==R.id.rbtn_fortyfive){
-//                    durationTime = 45;
-//                    rbtn_fortyFive.setChecked(true);
-//                }
-//                if (checkedId==R.id.rbtn_sixty){
-//                    durationTime = 60;
-//                    rbtn_Sixty.setChecked(true);
-//                }
                 switch (checkedId) {
                     case R.id.rbtn_fifteen:
                         durationTime = 15;
@@ -278,22 +247,6 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         durationGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                if (checkedId==R.id.rbtn_fifteen){
-//                    durationTime = 15;
-//                    rbtn_Fifteen.setChecked(true);
-//                }
-//                if (checkedId==R.id.rbtn_thirty){
-//                    durationTime = 30;
-//                    rbtn_thirty.setChecked(true);
-//                }
-//                if (checkedId==R.id.rbtn_fortyfive){
-//                    durationTime = 45;
-//                    rbtn_fortyFive.setChecked(true);
-//                }
-//                if (checkedId==R.id.rbtn_sixty){
-//                    durationTime = 60;
-//                    rbtn_Sixty.setChecked(true);
-//                }
                 switch (checkedId) {
                     case R.id.rbtn_2hr:
                         durationTime = 120;
@@ -461,5 +414,32 @@ public class ContactsFragment extends Fragment implements UserClickListener {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        IntentFilter filter=new IntentFilter();
+        filter.addAction(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(requestReceiver,filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(requestReceiver);
+
+    }
+
+    class RequestReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION)){
+              //String requestFrom=intent.getStringExtra(AishaConstants.EXTRA_MOBILE);
+                com.cybercareinfoways.aisha.model.LoationRequest request=intent.getParcelableExtra(AishaConstants.EXTRA_REQUEST_LOCATION);
+              userAvailableAdapter.addRequest(request);
+            }
+        }
     }
 }

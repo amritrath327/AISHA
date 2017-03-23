@@ -15,14 +15,17 @@ import com.cybercareinfoways.aisha.activities.ContactsActivity;
 import com.cybercareinfoways.aisha.activities.HomeActivity;
 import com.cybercareinfoways.aisha.activities.NewContactsActivity;
 import com.cybercareinfoways.aisha.fragments.ContactsFragment;
+import com.cybercareinfoways.aisha.model.LoationRequest;
 import com.cybercareinfoways.aisha.model.UserData;
 import com.cybercareinfoways.helpers.UserClickListener;
 import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Nutan on 07-03-2017.
@@ -33,12 +36,18 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
     private ArrayList<UserData> availableUserList;
     private Picasso picasso;
     private UserClickListener userClickListener;
+    private Map<String,LoationRequest> requestedNumbers;
 
 
     public UserAvailableAdapter(Context context, ArrayList<UserData> availableUserList) {
         this.context = context;
         this.availableUserList = availableUserList;
         picasso = Picasso.with(context);
+        requestedNumbers=new HashMap<>();
+    }
+    public void addRequest(LoationRequest request){
+        requestedNumbers.put(request.getRequestFrom(),request);
+        notifyDataSetChanged();
     }
     public void setOnUSerClicked(UserClickListener uSerClicked){
         this.userClickListener = uSerClicked;
@@ -60,6 +69,7 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         } else {
             holder.imgAvailableUserPic.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_menu_gallery));
         }
+
         holder.txtavailableUserMobile.setText(userData.getMobile());
         holder.txtAvailableUserStatus.setText("" + userData.getImage_status());
         if (context instanceof ContactsActivity) {
@@ -70,6 +80,11 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         }
         if (context instanceof HomeActivity) {
             holder.txtNamefromNumber.setText(((ContactsFragment) ((HomeActivity) context).getSupportFragmentManager().findFragmentByTag("ContactFrag")).getNameFromNumber(availableUserList.get(position).getMobile()));
+        }////requestedNumbers.get(userData.getMobile())!=null
+        if(requestedNumbers.size()>0){
+            holder.acceptRejectView.setVisibility(View.VISIBLE);
+        }else{
+            holder.acceptRejectView.setVisibility(View.GONE);
         }
     }
 
@@ -81,7 +96,7 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
     public class UserAvialableViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imgAvailableUserPic;
         TextView txtavailableUserMobile, txtAvailableUserStatus, txtNamefromNumber;
-        LinearLayout user_avialable_layout;
+        LinearLayout user_avialable_layout,acceptRejectView;
         List<TextView> textViews;
 
         public UserAvialableViewHolder(View itemView) {
@@ -91,6 +106,7 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
             txtAvailableUserStatus = (TextView) itemView.findViewById(R.id.txtAvailableUserStatus);
             user_avialable_layout = (LinearLayout) itemView.findViewById(R.id.user_avialable_layout);
             txtNamefromNumber = (TextView) itemView.findViewById(R.id.txtNamefromNumber);
+            acceptRejectView=(LinearLayout) itemView.findViewById(R.id.acceptRejectView);
             textViews = new LinkedList<>();
             itemView.setOnClickListener(this);
         }

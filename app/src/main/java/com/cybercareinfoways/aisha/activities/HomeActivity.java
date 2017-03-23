@@ -183,7 +183,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         if (location != null) {
             Log.i("Location>>", "Current Location is" + location);
             LocationStorage.getInstance().setLocation(location);
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+            //LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
     }
     private void getMyCuurentLocation() {

@@ -55,4 +55,6 @@ public class AishaConstants {
     public static final String SEARCHCODEMSG = "Searching Location..";
     public static final String EXTRA_MOBILE_NUMBER  = "mobile_number";
     public static final String EXTRA_DURATION  = "duration";
+    public static final String EXTRA_ACTION_REQUEST_SHARE_LOCAION ="EXTRA_ACTION_REQUEST_SHARE_LOCAION";
+    public static final String EXTRA_REQUEST_LOCATION="EXTRA_REQUEST_LOCATION";
 }

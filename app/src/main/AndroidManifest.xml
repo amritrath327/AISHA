@@ -124,6 +124,7 @@
         <activity android:name=".activities.ZipprActivity" />
         <activity android:name=".activities.SearchAishaCodeActivity" />
         <activity android:name=".activities.ZipprFoundActivity"></activity>
+        <service android:name=".services.ShareLocaionService"/>
     </application>
 
 </manifest>

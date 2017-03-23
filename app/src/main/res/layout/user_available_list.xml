@@ -7,9 +7,9 @@
     android:layout_width="80dp"
     android:layout_height="80dp"
     android:id="@+id/imgAvailableUserPic"/>
-    <LinearLayout
+     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp"
         android:gravity="center">
@@ -30,5 +30,28 @@
             android:text="ffjfjjfjfjfjf"
             android:layout_marginTop="5dp"
             android:id="@+id/txtAvailableUserStatus"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:visibility="visible"
+            android:id="@+id/acceptRejectView">
+            <Button
+                android:id="@+id/accept"
+                android:textColor="@color/white"
+                android:text="Accept"
+                android:theme="@style/MyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <Button
+                android:id="@+id/reject"
+                android:textColor="@color/white"
+                android:text="Reject"
+                android:theme="@style/MyButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
