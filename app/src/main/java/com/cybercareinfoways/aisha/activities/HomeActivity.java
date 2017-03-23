@@ -129,28 +129,28 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.home_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.item_contact) {
-            Intent intent = new Intent(HomeActivity.this, ContactsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        if (item.getItemId() == R.id.item_new) {
-            Intent intent = new Intent(HomeActivity.this, NewContactsActivity.class);
-            startActivity(intent);
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        super.onCreateOptionsMenu(menu);
+//        getMenuInflater().inflate(R.menu.home_menu, menu);
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        super.onOptionsItemSelected(item);
+//        if (item.getItemId() == R.id.item_contact) {
+//            Intent intent = new Intent(HomeActivity.this, ContactsActivity.class);
+//            startActivity(intent);
+//            return true;
+//        }
+//        if (item.getItemId() == R.id.item_new) {
+//            Intent intent = new Intent(HomeActivity.this, NewContactsActivity.class);
+//            startActivity(intent);
+//            return true;
+//        }
+//        return false;
+//    }
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

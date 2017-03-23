@@ -7,24 +7,59 @@
     android:orientation="vertical"
     tools:context="com.cybercareinfoways.aisha.activities.NewContactsActivity">
     <include layout="@layout/toolbar"/>
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <android.support.v7.widget.RecyclerView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/rcvAvailableUsers"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="No Contact Found"
-            android:gravity="center"
-            android:textColor="@color/colorPrimary"
-            android:textAllCaps="true"
-            android:textStyle="bold|italic"
-            android:textSize="20sp"
-            android:id="@+id/txtNocontact"
-            android:visibility="gone"/>
-    </FrameLayout>
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:background="@color/colorLight"
+                android:orientation="vertical"
+                android:padding="10dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Want to Invite more friends?"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"/>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+                    <ImageView
+                        android:id="@+id/imgWhastapp"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentLeft="true"
+                        android:src="@drawable/ic_whatsapp" />
+                    <ImageView
+                        android:id="@+id/imgFacebook"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/ic_facebook" />
+                    <ImageView
+                        android:id="@+id/imgMore"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/ic_more" />
+                </RelativeLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="Invite them using your favourite social Networks or simply tap on the following list."
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rcvContacts"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+        </LinearLayout>
 </LinearLayout>
