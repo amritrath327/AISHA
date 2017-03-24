@@ -116,8 +116,8 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
-            //contacts.setMobile(contactDataList.get(i).getMobile());
-            contacts.setMobile("7504891196");
+            contacts.setMobile(contactDataList.get(i).getMobile());
+            //contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);
