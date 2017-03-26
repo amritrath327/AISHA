@@ -30,28 +30,10 @@ public class FireMsgService extends FirebaseMessagingService {
         // Create Notification
         String requestedFrom=remoteMessage.getData().get("mobile_number");
         String duration= remoteMessage.getData().get("duration");
-       Intent intent = new Intent(this, HomeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1410,
-                intent, PendingIntent.FLAG_ONE_SHOT);
-        NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new
-                NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_whatsapp)
-                .setContentTitle("Aisha")
-                .setContentText("Request from "+ requestedFrom +" for "+ duration+ " min.")
-                .setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.arpeggio))
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent);
+        PushData pushData=new PushData(requestedFrom,Long.parseLong(duration));
+        Intent startService=new Intent(this,PushMessageService.class);
+        startService.putExtra(AishaConstants.EXTRA_PUSH_DATA,pushData);
+        startService(startService);
 
-        NotificationManager notificationManager =
-                (NotificationManager)
-                        getSystemService(Context.NOTIFICATION_SERVICE);
-
-        notificationManager.notify(1410, notificationBuilder.build());
-        Intent intent1=new Intent();
-        intent1.setAction(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION);
-        com.cybercareinfoways.aisha.model.LoationRequest request=new com.cybercareinfoways.aisha.model.LoationRequest(requestedFrom,0);
-        intent1.putExtra(AishaConstants.EXTRA_REQUEST_LOCATION,request);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent1);
     }
 }

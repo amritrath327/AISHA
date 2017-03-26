@@ -2,6 +2,7 @@ package com.cybercareinfoways.aisha.fragments;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -15,6 +16,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,12 +25,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.SearchAishaCodeActivity;
 import com.cybercareinfoways.aisha.activities.ZipprActivity;
+import com.cybercareinfoways.aisha.adapters.ZipprLisdtAdapter;
+import com.cybercareinfoways.aisha.model.ZipprListData;
+import com.cybercareinfoways.helpers.AishaConstants;
+import com.cybercareinfoways.helpers.AishaUtilities;
+import com.cybercareinfoways.helpers.DividerItemDecoration;
 import com.cybercareinfoways.helpers.LocationStorage;
+import com.cybercareinfoways.helpers.OnItemClickListner;
+import com.cybercareinfoways.helpers.WebApi;
+import com.cybercareinfoways.webapihelpers.ZipprListDataResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -41,14 +53,22 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Nutan on 13-03-2017.
  */
 
-public class ZipprFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class ZipprFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnItemClickListner {
     private static final int REQUEST_ERROR_RESOLVE = 1001;
     private static final long UPDATE_ITERVAL = 10000;
     private static final long FASTEST_UPDATE_INTERVAL = UPDATE_ITERVAL / 2;
@@ -56,9 +76,17 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
     private static final int RESOLUTION_CODE = 199;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
-    Handler handler = new Handler();
     @BindView(R.id.fab_add_zippr)
     FloatingActionButton floatingActionButton;
+    @BindView(R.id.txtNoZippr)
+    TextView txtNoZippr;
+    private RecyclerView rcvZippr;
+    private String userId;
+    private ZipprLisdtAdapter zipprLisdtAdapter;
+    private ArrayList<ZipprListData> zipprListDatas;
+    private WebApi zipprCodeApi;
+    private Call<ZipprListDataResponse> zipprListDataResponseCall;
+    private ProgressDialog progressDialog;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +100,7 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.zippr_fragment,container,false);
         ButterKnife.bind(this,view);
+        userId = AishaUtilities.getSharedPreffUserid(getActivity());
         Integer googleResultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getActivity());
         if (googleResultCode == ConnectionResult.SUCCESS) {
             buildGoogleApiClient();
@@ -81,6 +110,12 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
                 dialog.show();
             }
         }
+        zipprCodeApi = AishaUtilities.setupRetrofit();
+        zipprListDatas=new ArrayList<>();
+        progressDialog=new ProgressDialog(getActivity());
+        progressDialog.setMessage("Showing Codes...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,8 +127,56 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
                 }
             }
         });
+        rcvZippr=(RecyclerView)view.findViewById(R.id.rcvZippr);
+        rcvZippr.setLayoutManager(new LinearLayoutManager(getActivity()));
+        rcvZippr.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL_LIST));
+//        if (AishaUtilities.isConnectingToInternet(getActivity())){
+//            displayAllZipprCode(userId);
+//        }
         return view;
     }
+
+
+    private void displayAllZipprCode(String userId) {
+        if (zipprListDatas!=null && zipprListDatas.size()>0){
+            zipprListDatas.clear();
+            zipprLisdtAdapter.clear();
+        }
+        Map<String,String> mapZipprCode = new HashMap<>(1);
+        mapZipprCode.put(AishaConstants.USERID,userId);
+        zipprListDataResponseCall = zipprCodeApi.getAllZipprCode(mapZipprCode);
+        zipprListDataResponseCall.enqueue(new Callback<ZipprListDataResponse>() {
+            @Override
+            public void onResponse(Call<ZipprListDataResponse> call, Response<ZipprListDataResponse> response) {
+                if (response.isSuccessful()){
+                    progressDialog.dismiss();
+                    if (response.body().getStatus()==1){
+                        if (response.body().getList_zipper()!=null && response.body().getList_zipper().size()>0) {
+                            zipprListDatas.addAll(response.body().getList_zipper());
+                            zipprLisdtAdapter=new ZipprLisdtAdapter(getActivity(),zipprListDatas,ZipprFragment.this);
+                            rcvZippr.setAdapter(zipprLisdtAdapter);
+                            txtNoZippr.setVisibility(View.GONE);
+                        }else {
+                            txtNoZippr.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ZipprListDataResponse> call, Throwable t) {
+                if (progressDialog.isShowing()){
+                    progressDialog.dismiss();
+                }
+                if (t instanceof SocketTimeoutException){
+                    Toast.makeText(getActivity(), AishaConstants.CONNECYION_TIME_OUT, Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.v("ERROR",t.getMessage());
+                }
+            }
+        });
+    }
+
     protected synchronized void buildGoogleApiClient() {
         googleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
@@ -119,7 +202,7 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
         if (location != null) {
             LocationStorage.getInstance().setLocation(location);
             Log.i("Location>>", "Current Location is" + location+"......////"+LocationStorage.getInstance().getLocation().getLatitude()+",,,,"+LocationStorage.getInstance().getLocation().getLongitude());
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+            //LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
 
     }
@@ -229,6 +312,9 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
             googleApiClient.connect();
             Log.i("TAG", "Connected in OnStart");
         }
+        if (AishaUtilities.isConnectingToInternet(getActivity())){
+            displayAllZipprCode(userId);
+        }
         super.onStart();
     }
 
@@ -238,6 +324,9 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
             if (googleApiClient.isConnected()) {
                 googleApiClient.disconnect();
             }
+        }
+        if (zipprListDataResponseCall!=null){
+            zipprListDataResponseCall.cancel();
         }
         super.onStop();
     }
@@ -257,5 +346,10 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void OnItemClick(View view, int pos) {
+        //TODO
     }
 }

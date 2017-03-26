@@ -40,9 +40,11 @@ import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.NewContactsActivity;
 import com.cybercareinfoways.aisha.adapters.UserAvailableAdapter;
 import com.cybercareinfoways.aisha.model.Contacts;
+import com.cybercareinfoways.aisha.model.LoationRequest;
 import com.cybercareinfoways.aisha.model.UserData;
 import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
+import com.cybercareinfoways.fcm.PushData;
 import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.UserClickListener;
@@ -421,13 +423,13 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         super.onResume();
         IntentFilter filter=new IntentFilter();
         filter.addAction(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION);
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(requestReceiver,filter);
+        (getActivity()).registerReceiver(requestReceiver,filter);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(requestReceiver);
+        (getActivity()).unregisterReceiver(requestReceiver);
 
     }
 
@@ -437,8 +439,11 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION)){
               //String requestFrom=intent.getStringExtra(AishaConstants.EXTRA_MOBILE);
-                com.cybercareinfoways.aisha.model.LoationRequest request=intent.getParcelableExtra(AishaConstants.EXTRA_REQUEST_LOCATION);
-              userAvailableAdapter.addRequest(request);
+                //com.cybercareinfoways.aisha.model.LoationRequest request=intent.getParcelableExtra(AishaConstants.EXTRA_REQUEST_LOCATION);
+                PushData data=intent.getParcelableExtra(AishaConstants.EXTRA_PUSH_DATA);
+                com.cybercareinfoways.aisha.model.LoationRequest request=new LoationRequest(data.getRequestedFrom(),data.getDuration());
+                userAvailableAdapter.addRequest(request);
+                abortBroadcast();
             }
         }
     }

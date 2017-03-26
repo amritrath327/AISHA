@@ -15,10 +15,12 @@ import com.cybercareinfoways.webapihelpers.LocationRequestResponse;
 import com.cybercareinfoways.webapihelpers.UpdateProfileRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpRequest;
 import com.cybercareinfoways.webapihelpers.VerifyOtpResponse;
+import com.cybercareinfoways.webapihelpers.ZipprListDataResponse;
 import com.cybercareinfoways.webapihelpers.ZipprResponse;
 
 import java.util.Map;
 
+import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -53,4 +55,6 @@ public interface WebApi {
     Call<ZipprCodeResponse> getAddressFromCode(@Body Map<String,String> object);
     @POST("location_request")
     Call<LocationRequestResponse> sendLocationRequest(@Body Map<String,String> object);
+    @POST("zipper_list")
+    Call<ZipprListDataResponse> getAllZipprCode(@Body Map<String,String> object);
 }

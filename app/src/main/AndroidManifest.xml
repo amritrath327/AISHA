@@ -125,6 +125,12 @@
         <activity android:name=".activities.SearchAishaCodeActivity" />
         <activity android:name=".activities.ZipprFoundActivity"></activity>
         <service android:name=".services.ShareLocaionService"/>
+        <service android:name="com.cybercareinfoways.fcm.PushMessageService"/>
+        <receiver android:name="com.cybercareinfoways.fcm.PushBroadCastReceiver">
+            <intent-filter android:priority="0">
+                <action android:name="EXTRA_ACTION_REQUEST_SHARE_LOCAION"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -19,18 +19,20 @@
     android:id="@+id/txtZipprCode"
     android:textStyle="bold|italic"
     android:padding="5dp"/>
-    <Button
-        android:text="OKAY"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|bottom"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:id="@+id/btnOkay"
-        android:layout_marginTop="5dp"
-        android:textColor="@android:color/white"
-        android:padding="5dp"
-        android:textStyle="bold"
-        android:textSize="12sp"
-        android:theme="@style/MyButton"/>
+
+        <Button
+            android:text="OKAY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginTop="5dp"
+            android:layout_gravity="center|bottom"
+            android:id="@+id/btnOkay"
+            android:textColor="@android:color/white"
+            android:padding="5dp"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:theme="@style/MyButton"/>
+
 </LinearLayout>
