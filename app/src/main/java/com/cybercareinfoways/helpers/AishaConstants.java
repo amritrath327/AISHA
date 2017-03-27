@@ -58,4 +58,5 @@ public class AishaConstants {
     public static final String EXTRA_ACTION_REQUEST_SHARE_LOCAION ="EXTRA_ACTION_REQUEST_SHARE_LOCAION";
     public static final String EXTRA_REQUEST_LOCATION="EXTRA_REQUEST_LOCATION";
     public static final String EXTRA_PUSH_DATA ="EXTRA_PUSH_DATA" ;
+    public static final String EXTRA_ZIPPR_DATA = "EXTRA_ZIPPR_DATA";
 }

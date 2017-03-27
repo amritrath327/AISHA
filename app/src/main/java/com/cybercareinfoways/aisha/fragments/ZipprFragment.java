@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.SearchAishaCodeActivity;
 import com.cybercareinfoways.aisha.activities.ZipprActivity;
+import com.cybercareinfoways.aisha.activities.ZipprDetilsActivity;
 import com.cybercareinfoways.aisha.adapters.ZipprLisdtAdapter;
 import com.cybercareinfoways.aisha.model.ZipprListData;
 import com.cybercareinfoways.helpers.AishaConstants;
@@ -350,6 +351,9 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
 
     @Override
     public void OnItemClick(View view, int pos) {
-        //TODO
+        ZipprListData zipprListData = zipprListDatas.get(pos);
+        Intent intent = new Intent(getActivity(), ZipprDetilsActivity.class);
+        intent.putExtra(AishaConstants.EXTRA_ZIPPR_DATA,zipprListData);
+        startActivity(intent);
     }
 }
