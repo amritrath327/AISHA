@@ -134,7 +134,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".activities.ZipprDetilsActivity"></activity>
+        <activity android:name=".activities.ZipprDetilsActivity" />
+        <activity android:name=".activities.ShowInMapActivity"></activity>
     </application>
 
 </manifest>

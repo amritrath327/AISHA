@@ -44,11 +44,13 @@ import com.cybercareinfoways.aisha.model.LoationRequest;
 import com.cybercareinfoways.aisha.model.UserData;
 import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
+import com.cybercareinfoways.aisha.services.ShareLocaionService;
 import com.cybercareinfoways.fcm.PushData;
 import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.UserClickListener;
 import com.cybercareinfoways.helpers.WebApi;
+import com.cybercareinfoways.webapihelpers.AcceptRejectResponse;
 import com.cybercareinfoways.webapihelpers.LocationRequestResponse;
 
 import java.lang.ref.WeakReference;
@@ -66,7 +68,7 @@ import retrofit2.Response;
  * Created by YELOWFLASH on 03/11/2017.
  */
 
-public class ContactsFragment extends Fragment implements UserClickListener {
+public class ContactsFragment extends Fragment implements UserClickListener,UserAvailableAdapter.LocationAcceptListner{
     private static final int READCONTACT_CODE = 201;
     ProgressDialog dilogAvailableUser;
     private ArrayList<Contacts> cotactList, contactDataList;
@@ -80,6 +82,7 @@ public class ContactsFragment extends Fragment implements UserClickListener {
     private Call<LocationRequestResponse> locationSharingResponseCall;
     private int durationTime;
     private RequestReceiver requestReceiver;
+    private Call<AcceptRejectResponse> acceptRejectResponseCall;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -118,8 +121,9 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
-            contacts.setMobile(contactDataList.get(i).getMobile());
-            //contacts.setMobile("7504891196");
+            //contacts.setMobile(contactDataList.get(i).getMobile());
+            //contacts.setMobile("9668452233");
+            contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);
@@ -136,6 +140,7 @@ public class ContactsFragment extends Fragment implements UserClickListener {
                         if (userAvilableList!=null && userAvilableList.size()>0){
                             userAvailableAdapter  = new UserAvailableAdapter(getActivity(),userAvilableList);
                             rcvAvailableUsers.setAdapter(userAvailableAdapter);
+                            userAvailableAdapter.setListner(ContactsFragment.this);
                             userAvailableAdapter.setOnUSerClicked(ContactsFragment.this);
                             txtNocontact.setVisibility(View.GONE);
                         }else {
@@ -321,6 +326,74 @@ public class ContactsFragment extends Fragment implements UserClickListener {
         });
     }
 
+    @Override
+    public void onAccept(final LoationRequest loationRequest) {
+        Map<String,String> mapAcceptOrReject = new HashMap<>(3);
+        mapAcceptOrReject.put(AishaConstants.USERID,userId);
+        mapAcceptOrReject.put(AishaConstants.EXTRA_LOCATION_SHARING_ID,loationRequest.getLocation_sharing_id());
+        mapAcceptOrReject.put(AishaConstants.EXTRA_ACKOLEDGEMENT,"1");
+        acceptRejectResponseCall = webApi.acceptORreject(mapAcceptOrReject);
+        acceptRejectResponseCall.enqueue(new Callback<AcceptRejectResponse>() {
+            @Override
+            public void onResponse(Call<AcceptRejectResponse> call, Response<AcceptRejectResponse> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()==1){
+                        Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getActivity(), ShareLocaionService.class);
+                        intent.putExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST,loationRequest);
+                        getActivity().startService(intent);
+                    }else {
+                        Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AcceptRejectResponse> call, Throwable t) {
+                if (t instanceof SocketTimeoutException){
+                    Toast.makeText(getActivity(), AishaConstants.CONNECYION_TIME_OUT, Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.e(AishaConstants.EXTRA_ERROR,t.getMessage());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onReject(LoationRequest loationRequest) {
+        Map<String,String> mapAcceptOrReject = new HashMap<>(3);
+        mapAcceptOrReject.put(AishaConstants.USERID,userId);
+        mapAcceptOrReject.put(AishaConstants.EXTRA_LOCATION_SHARING_ID,loationRequest.getLocation_sharing_id());
+        mapAcceptOrReject.put(AishaConstants.EXTRA_ACKOLEDGEMENT,"0");
+        acceptRejectResponseCall = webApi.acceptORreject(mapAcceptOrReject);
+        acceptRejectResponseCall.enqueue(new Callback<AcceptRejectResponse>() {
+            @Override
+            public void onResponse(Call<AcceptRejectResponse> call, Response<AcceptRejectResponse> response) {
+                if (response.isSuccessful()){
+                    if (response.body().getStatus()==1){
+                        Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+
+                    }else {
+                        Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AcceptRejectResponse> call, Throwable t) {
+                if (t instanceof SocketTimeoutException){
+                    Toast.makeText(getActivity(), AishaConstants.CONNECYION_TIME_OUT, Toast.LENGTH_SHORT).show();
+                }else {
+                    Log.e(AishaConstants.EXTRA_ERROR,t.getMessage());
+                }
+            }
+        });
+    }
+
     public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>>{
         private WeakReference<ContactsFragment> contactsFragmentWeakReference;
         public ContactTask(ContactsFragment contactsFragment){
@@ -441,7 +514,7 @@ public class ContactsFragment extends Fragment implements UserClickListener {
               //String requestFrom=intent.getStringExtra(AishaConstants.EXTRA_MOBILE);
                 //com.cybercareinfoways.aisha.model.LoationRequest request=intent.getParcelableExtra(AishaConstants.EXTRA_REQUEST_LOCATION);
                 PushData data=intent.getParcelableExtra(AishaConstants.EXTRA_PUSH_DATA);
-                com.cybercareinfoways.aisha.model.LoationRequest request=new LoationRequest(data.getRequestedFrom(),data.getDuration());
+                com.cybercareinfoways.aisha.model.LoationRequest request=new LoationRequest(data.getRequestedFrom(),data.getDuration(),data.getLocation_sharing_id());
                 userAvailableAdapter.addRequest(request);
                 abortBroadcast();
             }

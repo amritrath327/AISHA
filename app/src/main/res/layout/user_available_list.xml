@@ -38,14 +38,14 @@
             android:visibility="visible"
             android:id="@+id/acceptRejectView">
             <Button
-                android:id="@+id/accept"
+                android:id="@+id/btnAccept"
                 android:textColor="@color/white"
                 android:text="Accept"
                 android:theme="@style/MyButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <Button
-                android:id="@+id/reject"
+                android:id="@+id/btnReject"
                 android:textColor="@color/white"
                 android:text="Reject"
                 android:theme="@style/MyButton"

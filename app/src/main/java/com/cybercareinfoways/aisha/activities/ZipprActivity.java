@@ -128,7 +128,7 @@ public class ZipprActivity extends AppCompatActivity {
                 if (AishaUtilities.isConnectingToInternet(ZipprActivity.this)){
                     sendZipprLocation(etPlaceNmaeString,etHnoPlotNoString, etStreetNameString, etCityString, etStateString,etPincodeString,addressString);
                 }else {
-                    Toast.makeText(ZipprActivity.this, "Please chekc network connection", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ZipprActivity.this, "Please check network connection", Toast.LENGTH_SHORT).show();
                 }
             }
         });

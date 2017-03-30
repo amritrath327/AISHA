@@ -8,23 +8,40 @@ import android.os.Parcelable;
  */
 
 public class LoationRequest implements Parcelable{
-    public LoationRequest(String requestFrom, long duration) {
+    public void setRequestFrom(String requestFrom) {
         this.requestFrom = requestFrom;
-        this.duration = duration;
     }
 
-    public String requestFrom;
+    public String getLocation_sharing_id() {
+        return location_sharing_id;
+    }
+
+    public void setLocation_sharing_id(String location_sharing_id) {
+        this.location_sharing_id = location_sharing_id;
+    }
+
+    public LoationRequest(String requestFrom, long duration, String location_sharing_id) {
+        this.requestFrom = requestFrom;
+        this.duration = duration;
+        this.location_sharing_id=location_sharing_id;
+
+    }
+
+    public String requestFrom,location_sharing_id;
     public long duration;
 
     protected LoationRequest(Parcel in) {
         requestFrom = in.readString();
         duration = in.readLong();
+        location_sharing_id=in.readString();
+
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(requestFrom);
         dest.writeLong(duration);
+        dest.writeString(location_sharing_id);
     }
 
     @Override

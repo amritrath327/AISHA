@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,6 +38,7 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
     private Picasso picasso;
     private UserClickListener userClickListener;
     private Map<String,LoationRequest> requestedNumbers;
+    private LocationAcceptListner listner;
 
 
     public UserAvailableAdapter(Context context, ArrayList<UserData> availableUserList) {
@@ -80,8 +82,8 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         }
         if (context instanceof HomeActivity) {
             holder.txtNamefromNumber.setText(((ContactsFragment) ((HomeActivity) context).getSupportFragmentManager().findFragmentByTag("ContactFrag")).getNameFromNumber(availableUserList.get(position).getMobile()));
-        }////requestedNumbers.get(userData.getMobile())!=null
-        if(requestedNumbers.size()>0){
+        }
+        if(requestedNumbers.get(userData.getMobile())!=null){
             holder.acceptRejectView.setVisibility(View.VISIBLE);
         }else{
             holder.acceptRejectView.setVisibility(View.GONE);
@@ -92,12 +94,17 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
     public int getItemCount() {
         return availableUserList.size();
     }
+    public void setListner(LocationAcceptListner listner){
+        this.listner=listner;
+    }
+
 
     public class UserAvialableViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imgAvailableUserPic;
         TextView txtavailableUserMobile, txtAvailableUserStatus, txtNamefromNumber;
         LinearLayout user_avialable_layout,acceptRejectView;
         List<TextView> textViews;
+        Button btnAccept,btnReject;
 
         public UserAvialableViewHolder(View itemView) {
             super(itemView);
@@ -108,14 +115,35 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
             txtNamefromNumber = (TextView) itemView.findViewById(R.id.txtNamefromNumber);
             acceptRejectView=(LinearLayout) itemView.findViewById(R.id.acceptRejectView);
             textViews = new LinkedList<>();
+            btnAccept = (Button)itemView.findViewById(R.id.btnAccept);
+            btnReject = (Button)itemView.findViewById(R.id.btnReject);
             itemView.setOnClickListener(this);
+            btnAccept.setOnClickListener(this);
+            btnReject.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            if (userClickListener!=null){
+            if(v.getId()==R.id.btnAccept){
+                 if(listner!=null){
+                     int pos=getAdapterPosition();
+                     UserData userData=availableUserList.get(pos);
+                     com.cybercareinfoways.aisha.model.LoationRequest loationRequest=requestedNumbers.get(userData.getMobile());
+                     listner.onAccept(loationRequest);
+                 }
+            }else if(v.getId()==R.id.btnReject){
+                int pos=getAdapterPosition();
+                UserData userData=availableUserList.get(pos);
+                com.cybercareinfoways.aisha.model.LoationRequest loationRequest=requestedNumbers.get(userData.getMobile());
+                listner.onReject(loationRequest);
+            }
+            else  if(userClickListener!=null){
                 userClickListener.onUserCliked(v,getAdapterPosition());
             }
         }
+    }
+    public interface LocationAcceptListner{
+        void onAccept(com.cybercareinfoways.aisha.model.LoationRequest loationRequest);
+        void onReject(com.cybercareinfoways.aisha.model.LoationRequest loationRequest);
     }
 }

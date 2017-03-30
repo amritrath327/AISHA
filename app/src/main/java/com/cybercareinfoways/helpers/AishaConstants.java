@@ -59,4 +59,11 @@ public class AishaConstants {
     public static final String EXTRA_REQUEST_LOCATION="EXTRA_REQUEST_LOCATION";
     public static final String EXTRA_PUSH_DATA ="EXTRA_PUSH_DATA" ;
     public static final String EXTRA_ZIPPR_DATA = "EXTRA_ZIPPR_DATA";
+    public static final String EXTRA_LOCATION_SHARING_ID = "location_sharing_id";
+    public static final String EXTRA_ACKOLEDGEMENT = "acknowledgement";
+    public static final String EXTRA_SEND_LOCATION_REQUEST = "EXTRA_SEND_LOCATION_REQUEST";
+    public static final String EXTRA_LATTITUDE = "latitude";
+    public static final String EXTRA_LONGITUDE = "longitude";
+    public static final String EXTRA_SHOW_IN_MAP_ACTION = "EXTRA_SHOW_IN_MAP_ACTION";
+    public static final String EXTRA_SHARED_CONTENT_ON_MAP = "EXTRA_SHARED_CONTENT_ON_MAP";
 }

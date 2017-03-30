@@ -7,6 +7,14 @@
     android:orientation="vertical"
     tools:context="com.cybercareinfoways.aisha.activities.ZipprActivity">
 <include layout="@layout/toolbar"/>
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,4 +147,6 @@
         android:textStyle="bold"
         android:textSize="12sp"
         android:theme="@style/MyButton"/>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

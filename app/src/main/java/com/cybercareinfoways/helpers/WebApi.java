@@ -4,9 +4,11 @@ import com.cybercareinfoways.aisha.model.ZipprCodeResponse;
 import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
 import com.cybercareinfoways.aisha.model.Zippr;
+import com.cybercareinfoways.webapihelpers.AcceptRejectResponse;
 import com.cybercareinfoways.webapihelpers.GenOtpRequest;
 import com.cybercareinfoways.webapihelpers.GenOtpResponse;
 import com.cybercareinfoways.webapihelpers.ProfileResponse;
+import com.cybercareinfoways.webapihelpers.SharingResponse;
 import com.cybercareinfoways.webapihelpers.SimpleWebRequest;
 import com.cybercareinfoways.webapihelpers.SimpleWebResponse;
 import com.cybercareinfoways.webapihelpers.TokenRegRequest;
@@ -57,4 +59,9 @@ public interface WebApi {
     Call<LocationRequestResponse> sendLocationRequest(@Body Map<String,String> object);
     @POST("zipper_list")
     Call<ZipprListDataResponse> getAllZipprCode(@Body Map<String,String> object);
+    @POST("location_request_action")
+    Call<AcceptRejectResponse> acceptORreject(@Body Map<String,String> object);
+    @POST("location_sharing")
+    Call<SharingResponse> getUpadatedLocationFromervice(@Body Map<String,String> object);
+
 }
