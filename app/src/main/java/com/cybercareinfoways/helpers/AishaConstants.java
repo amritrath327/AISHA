@@ -56,7 +56,7 @@ public class AishaConstants {
     public static final String EXTRA_MOBILE_NUMBER  = "mobile_number";
     public static final String EXTRA_DURATION  = "duration";
     public static final String EXTRA_ACTION_REQUEST_SHARE_LOCAION ="EXTRA_ACTION_REQUEST_SHARE_LOCAION";
-    public static final String EXTRA_REQUEST_LOCATION="EXTRA_REQUEST_LOCATION";
+    public static final String EXTRA_USER_REQUEST_LOCATION ="EXTRA_USER_REQUEST_LOCATION";
     public static final String EXTRA_PUSH_DATA ="EXTRA_PUSH_DATA" ;
     public static final String EXTRA_ZIPPR_DATA = "EXTRA_ZIPPR_DATA";
     public static final String EXTRA_LOCATION_SHARING_ID = "location_sharing_id";
@@ -65,5 +65,5 @@ public class AishaConstants {
     public static final String EXTRA_LATTITUDE = "latitude";
     public static final String EXTRA_LONGITUDE = "longitude";
     public static final String EXTRA_SHOW_IN_MAP_ACTION = "EXTRA_SHOW_IN_MAP_ACTION";
-    public static final String EXTRA_SHARED_CONTENT_ON_MAP = "EXTRA_SHARED_CONTENT_ON_MAP";
+    public static final String EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP = "EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP";
 }

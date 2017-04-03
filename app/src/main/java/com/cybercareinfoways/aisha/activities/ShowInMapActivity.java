@@ -9,15 +9,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.cybercareinfoways.aisha.R;
-import com.cybercareinfoways.aisha.model.SharedLocation;
 import com.cybercareinfoways.helpers.AishaConstants;
-import com.google.android.gms.location.LocationRequest;
 
 public class ShowInMapActivity extends AppCompatActivity {
     private ShowForMapReciver showForMapReciver;
-    public static SharedLocation sharedLocation;
-    public static com.cybercareinfoways.aisha.model.LoationRequest loationCustomeRequest;
-    public static Location location;
+    //public static SharedLocation sharedLocation;
+    //public static com.cybercareinfoways.aisha.model.LoationRequest loationCustomeRequest;
+    //public static Location location;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,15 +37,20 @@ public class ShowInMapActivity extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(showForMapReciver);
     }
+    public void upDateMap(Location location){
+
+    }
+
 
     class ShowForMapReciver extends BroadcastReceiver{
 
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AishaConstants.EXTRA_SHOW_IN_MAP_ACTION)){
-                sharedLocation = intent.getParcelableExtra(AishaConstants.EXTRA_SHARED_CONTENT_ON_MAP);
-                loationCustomeRequest = intent.getParcelableExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST);
-                location  = intent.getParcelableExtra(AishaConstants.EXTRA_REQUEST_LOCATION);
+               // sharedLocation = intent.getParcelableExtra(AishaConstants.EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP);
+                //loationCustomeRequest = intent.getParcelableExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST);
+                 Location location  = intent.getParcelableExtra(AishaConstants.EXTRA_USER_REQUEST_LOCATION);
+                 upDateMap(location);
             }
         }
     }

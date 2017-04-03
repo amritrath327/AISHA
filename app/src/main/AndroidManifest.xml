@@ -135,7 +135,13 @@
         </receiver>
 
         <activity android:name=".activities.ZipprDetilsActivity" />
-        <activity android:name=".activities.ShowInMapActivity"></activity>
+        <activity android:name=".activities.ShowInMapActivity" />
+
+        <service android:name=".services.ShareLocaionService" />
+
+        <activity
+            android:name=".activities.TrackAndShareLocationActivity"
+            android:label="@string/title_activity_track_and_share_location"></activity>
     </application>
 
 </manifest>

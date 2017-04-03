@@ -1,16 +1,11 @@
 package com.cybercareinfoways.aisha.services;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,11 +13,9 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.cybercareinfoways.aisha.activities.HomeActivity;
 import com.cybercareinfoways.aisha.model.LoationRequest;
 import com.cybercareinfoways.helpers.AishaConstants;
 import com.cybercareinfoways.helpers.AishaUtilities;
-import com.cybercareinfoways.helpers.LocationStorage;
 import com.cybercareinfoways.helpers.WebApi;
 import com.cybercareinfoways.webapihelpers.SharingResponse;
 import com.google.android.gms.common.ConnectionResult;
@@ -156,9 +149,9 @@ public class ShareLocaionService extends IntentService implements GoogleApiClien
                     if (response.body().getStatus()==1){
                         Intent intent  =new Intent();
                         intent.setAction(AishaConstants.EXTRA_SHOW_IN_MAP_ACTION);
-                        intent.putExtra(AishaConstants.EXTRA_SHARED_CONTENT_ON_MAP,response.body().getLocation());
+                        intent.putExtra(AishaConstants.EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP,response.body().getLocation());
                         intent.putExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST,locationCostomeRequest);
-                        intent.putExtra(AishaConstants.EXTRA_REQUEST_LOCATION,location);
+                        intent.putExtra(AishaConstants.EXTRA_USER_REQUEST_LOCATION,location);
                         sendBroadcast(intent);
                     }
                 }

@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.cybercareinfoways.aisha.R;
@@ -31,7 +32,9 @@ public class FireMsgService extends FirebaseMessagingService {
 
         // Create Notification
         String requestedFrom=remoteMessage.getData().get("mobile_number");
-        String duration= remoteMessage.getData().get("duration");
+        //if (!TextUtils.isEmpty(remoteMessage.getData().get("duration"))) {
+            String duration = remoteMessage.getData().get("duration");
+        //}
         String location_sharing_id=remoteMessage.getData().get("location_sharing_id");
 
 

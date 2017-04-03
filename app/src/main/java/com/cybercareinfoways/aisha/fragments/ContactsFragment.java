@@ -121,9 +121,9 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
-            //contacts.setMobile(contactDataList.get(i).getMobile());
+            contacts.setMobile(contactDataList.get(i).getMobile());
             //contacts.setMobile("9668452233");
-            contacts.setMobile("7504891196");
+            //contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);
@@ -512,7 +512,7 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION)){
               //String requestFrom=intent.getStringExtra(AishaConstants.EXTRA_MOBILE);
-                //com.cybercareinfoways.aisha.model.LoationRequest request=intent.getParcelableExtra(AishaConstants.EXTRA_REQUEST_LOCATION);
+                //com.cybercareinfoways.aisha.model.LoationRequest request=intent.getParcelableExtra(AishaConstants.EXTRA_USER_REQUEST_LOCATION);
                 PushData data=intent.getParcelableExtra(AishaConstants.EXTRA_PUSH_DATA);
                 com.cybercareinfoways.aisha.model.LoationRequest request=new LoationRequest(data.getRequestedFrom(),data.getDuration(),data.getLocation_sharing_id());
                 userAvailableAdapter.addRequest(request);
