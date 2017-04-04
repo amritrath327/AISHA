@@ -1,6 +1,7 @@
 package com.cybercareinfoways.aisha.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.ContactsActivity;
 import com.cybercareinfoways.aisha.activities.HomeActivity;
 import com.cybercareinfoways.aisha.activities.NewContactsActivity;
+import com.cybercareinfoways.aisha.activities.TrackAndShareLocationActivity;
 import com.cybercareinfoways.aisha.fragments.ContactsFragment;
 import com.cybercareinfoways.aisha.model.LoationRequest;
 import com.cybercareinfoways.aisha.model.UserData;
@@ -85,26 +87,37 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
         }
         if(requestedNumbers.get(userData.getMobile())!=null){
             holder.acceptRejectView.setVisibility(View.VISIBLE);
+            LoationRequest request=requestedNumbers.get(userData.getMobile());
+            if(request.getIsAccpted()){
+                holder.imgSharingImage.setVisibility(View.VISIBLE);
+            }else {
+                holder.imgSharingImage.setVisibility(View.GONE);
+            }
         }else{
             holder.acceptRejectView.setVisibility(View.GONE);
         }
+
     }
 
     @Override
     public int getItemCount() {
         return availableUserList.size();
     }
+    public void onRequestAccepted(com.cybercareinfoways.aisha.model.LoationRequest request){
+        request.setRequestAccepted(true);
+        notifyDataSetChanged();
+    }
+
     public void setListner(LocationAcceptListner listner){
         this.listner=listner;
     }
-
-
     public class UserAvialableViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView imgAvailableUserPic;
         TextView txtavailableUserMobile, txtAvailableUserStatus, txtNamefromNumber;
         LinearLayout user_avialable_layout,acceptRejectView;
         List<TextView> textViews;
         Button btnAccept,btnReject;
+        ImageView imgSharingImage;
 
         public UserAvialableViewHolder(View itemView) {
             super(itemView);
@@ -120,6 +133,8 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
             itemView.setOnClickListener(this);
             btnAccept.setOnClickListener(this);
             btnReject.setOnClickListener(this);
+            imgSharingImage = (ImageView)itemView.findViewById(R.id.imgSharingImage);
+            imgSharingImage.setOnClickListener(this);
         }
 
         @Override
@@ -136,6 +151,9 @@ public class UserAvailableAdapter extends RecyclerView.Adapter<UserAvailableAdap
                 UserData userData=availableUserList.get(pos);
                 com.cybercareinfoways.aisha.model.LoationRequest loationRequest=requestedNumbers.get(userData.getMobile());
                 listner.onReject(loationRequest);
+            }else if (v.getId()==R.id.imgSharingImage){
+                Intent intent = new Intent(context, TrackAndShareLocationActivity.class);
+                context.startActivity(intent);
             }
             else  if(userClickListener!=null){
                 userClickListener.onUserCliked(v,getAdapterPosition());

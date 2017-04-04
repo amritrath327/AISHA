@@ -121,8 +121,8 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
         for (int i=0;i<contactDataList.size();i++) {
             Contacts contacts = new Contacts();
-            contacts.setMobile(contactDataList.get(i).getMobile());
-            //contacts.setMobile("9668452233");
+            //contacts.setMobile(contactDataList.get(i).getMobile());
+            contacts.setMobile("9668452233");
             //contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
@@ -342,6 +342,8 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
                         Intent intent = new Intent(getActivity(), ShareLocaionService.class);
                         intent.putExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST,loationRequest);
                         getActivity().startService(intent);
+                        userAvailableAdapter.onRequestAccepted(loationRequest);
+
                     }else {
                         Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
                     }

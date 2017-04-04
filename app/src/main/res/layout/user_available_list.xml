@@ -24,6 +24,12 @@
                 android:text="ffjfjjfjfjfjf"
                 android:layout_weight="0.8"
                 android:id="@+id/txtNamefromNumber"/>
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/imgSharingImage"
+                android:src="@drawable/ic_share_loc"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <TextView

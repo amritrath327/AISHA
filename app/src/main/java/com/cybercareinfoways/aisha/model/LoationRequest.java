@@ -19,6 +19,14 @@ public class LoationRequest implements Parcelable{
     public void setLocation_sharing_id(String location_sharing_id) {
         this.location_sharing_id = location_sharing_id;
     }
+    private boolean isAccepted;
+    public void setRequestAccepted(boolean accepted){
+        this.isAccepted=accepted;
+    }
+
+    public boolean getIsAccpted(){
+        return isAccepted;
+    }
 
     public LoationRequest(String requestFrom, long duration, String location_sharing_id) {
         this.requestFrom = requestFrom;

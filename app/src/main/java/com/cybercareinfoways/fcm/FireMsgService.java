@@ -3,9 +3,12 @@ package com.cybercareinfoways.fcm;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.NotificationCompat;
 import android.text.Html;
@@ -32,6 +35,7 @@ public class FireMsgService extends FirebaseMessagingService {
 
         // Create Notification
         String requestedFrom=remoteMessage.getData().get("mobile_number");
+
         //if (!TextUtils.isEmpty(remoteMessage.getData().get("duration"))) {
             String duration = remoteMessage.getData().get("duration");
         //}
@@ -46,7 +50,7 @@ public class FireMsgService extends FirebaseMessagingService {
                 NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_whatsapp)
                 .setContentTitle("AISHA")
-                .setContentText(requestedFrom+" wants to share your location for "+duration+" mins.")
+                .setContentText(getNameFromNumber(requestedFrom)+" wants to share your location for "+duration+" mins.")
                 .setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.arpeggio))
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
@@ -60,5 +64,20 @@ public class FireMsgService extends FirebaseMessagingService {
         startService.putExtra(AishaConstants.EXTRA_PUSH_DATA,pushData);
         startService(startService);
 
+    }
+    public String getNameFromNumber(String mobile) {
+        String contactName = null;
+        ContentResolver cr = getContentResolver();
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(mobile));
+        Cursor cursor = cr.query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+
+        if (cursor.moveToFirst()) {
+            contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+
+        return contactName;
     }
 }
