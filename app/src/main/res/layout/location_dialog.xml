@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:padding="10dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:hint="Enter Meeting Address"
+        android:gravity="center"
+        android:id="@+id/etMeetingAddress"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_margin="10dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="italic"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:theme="@style/MyButton"
+            android:layout_gravity="center"
+            android:id="@+id/btnOkay"
+            android:text="Okay"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="OR"
+            android:textStyle="bold|italic"
+            android:layout_gravity="center"
+            android:layout_margin="5dp" />
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set Current Location"
+        android:textStyle="italic"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:theme="@style/MyButton"
+        android:layout_gravity="center"
+        android:id="@+id/btnCurrentLocaton"/>
+</LinearLayout>

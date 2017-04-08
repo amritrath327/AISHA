@@ -8,6 +8,7 @@ import com.cybercareinfoways.webapihelpers.AcceptRejectResponse;
 import com.cybercareinfoways.webapihelpers.GenOtpRequest;
 import com.cybercareinfoways.webapihelpers.GenOtpResponse;
 import com.cybercareinfoways.webapihelpers.ProfileResponse;
+import com.cybercareinfoways.webapihelpers.Result;
 import com.cybercareinfoways.webapihelpers.SharingResponse;
 import com.cybercareinfoways.webapihelpers.SimpleWebRequest;
 import com.cybercareinfoways.webapihelpers.SimpleWebResponse;
@@ -63,5 +64,6 @@ public interface WebApi {
     Call<AcceptRejectResponse> acceptORreject(@Body Map<String,String> object);
     @POST("location_sharing")
     Call<SharingResponse> getUpadatedLocationFromervice(@Body Map<String,String> object);
-
+    @POST("meeting_point")
+    Call<Result> sendMeetingPoint(@Body Map<String,String> object);
 }

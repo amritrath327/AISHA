@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "588285533321-ce6rti2fvodjqc2pbqhciphgmurtueng.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cybercareinfoways.aisha",
+            "certificate_hash": "934b6826f9c173ffd6c698de8e9ed55e3ee7824c"
+          }
+        },
+        {
           "client_id": "588285533321-rc71rmhem5vq04scbve7is8rrb22i17t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

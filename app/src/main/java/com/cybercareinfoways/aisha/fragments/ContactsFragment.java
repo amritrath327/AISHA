@@ -119,11 +119,11 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         UserRequest userRequest=new UserRequest();
         userRequest.setUser_id(userId);
         ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
-        for (int i=0;i<contactDataList.size();i++) {
+        for (int i=0;i<1;i++) {
             Contacts contacts = new Contacts();
             //contacts.setMobile(contactDataList.get(i).getMobile());
-            contacts.setMobile("9668452233");
-            //contacts.setMobile("7504891196");
+            //contacts.setMobile("9668452233");
+            contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);

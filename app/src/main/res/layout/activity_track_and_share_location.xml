@@ -1,8 +1,34 @@
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cybercareinfoways.aisha.activities.TrackAndShareLocationActivity" />
+    tools:context="com.cybercareinfoways.aisha.activities.TrackAndShareLocationActivity">
+<!--<fragment-->
+    <!--android:id="@+id/map"-->
+    <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+     <!--/>-->
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_user_marker"
+        android:id="@+id/imgUserMarker"/>
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_user_friend_marker"
+        android:layout_gravity="right"
+        android:id="@+id/imgUserfriendMrker"/>
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_meeting_marker"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/imgMeetingPointMarker"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/containerMap"/>
+</FrameLayout>

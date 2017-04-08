@@ -26,6 +26,7 @@ import com.google.firebase.messaging.RemoteMessage;
  */
 
 public class FireMsgService extends FirebaseMessagingService {
+    String duration;
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
@@ -36,9 +37,9 @@ public class FireMsgService extends FirebaseMessagingService {
         // Create Notification
         String requestedFrom=remoteMessage.getData().get("mobile_number");
 
-        //if (!TextUtils.isEmpty(remoteMessage.getData().get("duration"))) {
-            String duration = remoteMessage.getData().get("duration");
-        //}
+        if (!TextUtils.isEmpty(remoteMessage.getData().get("duration"))) {
+            duration = remoteMessage.getData().get("duration");
+        }
         String location_sharing_id=remoteMessage.getData().get("location_sharing_id");
 
 
