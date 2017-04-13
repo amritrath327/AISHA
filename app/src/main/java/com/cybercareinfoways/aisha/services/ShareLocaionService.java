@@ -76,13 +76,11 @@ public class ShareLocaionService extends IntentService implements GoogleApiClien
         locationCostomeRequest = intent.getParcelableExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST);
         buildGoogleApiClient();
         googleApiClient.connect();
-        //TODO GetLocation Updates
         //duration=intent.getIntExtra(AishaConstants.EXTRA_DURATION,1000);
         if(!isTimerStarted){
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    //TODO STOP LOCATION UPDATE
                     LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, ShareLocaionService.this);
                     Toast.makeText(ShareLocaionService.this,"Location Ended",Toast.LENGTH_SHORT).show();
                     stopSelf();
@@ -147,9 +145,9 @@ public class ShareLocaionService extends IntentService implements GoogleApiClien
             public void onResponse(Call<SharingResponse> call, Response<SharingResponse> response) {
                 if (response.isSuccessful()){
                     if (response.body().getStatus()==1){
-                        Intent intent  =new Intent();
+                        Intent intent  = new Intent();
                         intent.setAction(AishaConstants.EXTRA_SHOW_IN_MAP_ACTION);
-                        intent.putExtra(AishaConstants.EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP,response.body().getLocation());
+                        intent.putParcelableArrayListExtra(AishaConstants.EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP,response.body().getLocation());
                         intent.putExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST,locationCostomeRequest);
                         intent.putExtra(AishaConstants.EXTRA_USER_REQUEST_LOCATION,location);
                         sendBroadcast(intent);
@@ -171,7 +169,6 @@ public class ShareLocaionService extends IntentService implements GoogleApiClien
     private void getMyCuurentLocation() {
         Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         if (location != null) {
-            //TODO send location to server
             sendMyLocation(userId,location,locationCostomeRequest);
         } else {
             LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);

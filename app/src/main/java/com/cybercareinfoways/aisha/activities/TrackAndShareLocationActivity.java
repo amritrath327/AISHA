@@ -35,6 +35,7 @@ import com.cybercareinfoways.helpers.AishaUtilities;
 import com.cybercareinfoways.helpers.StoreCurrentLocation;
 import com.cybercareinfoways.helpers.WebApi;
 import com.cybercareinfoways.webapihelpers.Result;
+import com.cybercareinfoways.webapihelpers.SharingResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -59,6 +60,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +74,7 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
     private GoogleMap mMap;
 
     private ShowForMapReciver showForMapReciver;
-    public static SharedLocation sharedLocation;
+    private  ArrayList<SharedLocation> sharedLocations;
     public static com.cybercareinfoways.aisha.model.LoationRequest loationCustomeRequest;
     public static Location location;
     private ImageView imgUserMarker,imgUserfriendMrker,imgMeetingPointMarker;
@@ -92,6 +94,7 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_and_share_location);
+        sharedLocations = new ArrayList<>();
         imgUserMarker = (ImageView)findViewById(R.id.imgUserMarker);
         imgUserfriendMrker = (ImageView)findViewById(R.id.imgUserfriendMrker);
         imgMeetingPointMarker = (ImageView)findViewById(R.id.imgMeetingPointMarker);
@@ -172,10 +175,10 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
         }
         if (v.getId()==R.id.imgUserfriendMrker){
             if (mMap!=null){
-                if (sharedLocation!=null){
-                    LatLng friendLocation = new LatLng(sharedLocation.getTrack().get(0).getLatitude(), sharedLocation.getTrack().get(0).getLongitude());
+                if (sharedLocations!=null){
+                    LatLng friendLocation = new LatLng(sharedLocations.get(0).getTrack().get(0).getLatitude(), sharedLocations.get(0).getTrack().get(0).getLongitude());
                     BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_user_friend_marker);
-                    mMap.addMarker(new MarkerOptions().position(friendLocation).title("Friend").icon(icon)).showInfoWindow();
+                    mMap.addMarker(new MarkerOptions().position(friendLocation).title("You").icon(icon)).showInfoWindow();
                     mMap.moveCamera(CameraUpdateFactory.newLatLng(friendLocation));
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(friendLocation, 15);
                     mMap.animateCamera(cameraUpdate);
@@ -215,7 +218,7 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
     private void sendMeetingPoint(final double latitude, final double longitude, final Dialog locationDialog) {
         Map<String,String> mapSendMeetingPoint = new HashMap<>(4);
         mapSendMeetingPoint.put(AishaConstants.USERID,userId);
-        mapSendMeetingPoint.put(AishaConstants.EXTRA_LOCATION_SHARING_ID,sharedLocation.getLocation_sharing_id());
+        mapSendMeetingPoint.put(AishaConstants.EXTRA_LOCATION_SHARING_ID,sharedLocations.get(0).getLocation_sharing_id());
         mapSendMeetingPoint.put(AishaConstants.EXTRA_LATTITUDE,""+latitude);
         mapSendMeetingPoint.put(AishaConstants.EXTRA_LONGITUDE,""+longitude);
         resultCall=webApi.sendMeetingPoint(mapSendMeetingPoint);
@@ -223,7 +226,7 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
                 if (response.isSuccessful()){
-                    if (locationDialog!=null && locationDialog.isShowing()){
+                    if (locationDialog!=null || locationDialog.isShowing()){
                         locationDialog.dismiss();
                     }
                     if (response.body().getStatus()==1){
@@ -244,7 +247,7 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
 
             @Override
             public void onFailure(Call<Result> call, Throwable t) {
-                if (locationDialog!=null && locationDialog.isShowing()){
+                if (locationDialog!=null || locationDialog.isShowing()){
                     locationDialog.dismiss();
                 }
                 if (t instanceof SocketTimeoutException){
@@ -337,10 +340,10 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AishaConstants.EXTRA_SHOW_IN_MAP_ACTION)){
-                sharedLocation = intent.getParcelableExtra(AishaConstants.EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP);
+                 sharedLocations = intent.getParcelableArrayListExtra(AishaConstants.EXTRA_FRIEND_LOCATION_SHARED_CONTENT_ON_MAP);
                 loationCustomeRequest = intent.getParcelableExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST);
                 location  = intent.getParcelableExtra(AishaConstants.EXTRA_USER_REQUEST_LOCATION);
-                upDateMap(location,sharedLocation,loationCustomeRequest);
+                upDateMap(location,sharedLocations,loationCustomeRequest);
             }
         }
     }
@@ -357,16 +360,18 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
         super.onPause();
         unregisterReceiver(showForMapReciver);
     }
-    public void upDateMap(Location location,SharedLocation sharedLocation,com.cybercareinfoways.aisha.model.LoationRequest loationCustomeRequest ){
-        if (mMap!=null && location!=null && sharedLocation!=null ){
+    public void upDateMap(Location location,ArrayList<SharedLocation> sharedLocations1,com.cybercareinfoways.aisha.model.LoationRequest loationCustomeRequest ){
+        if (mMap!=null && location!=null && sharedLocations1!=null ){
             LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(userLocation).title("Me")).showInfoWindow();
+            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_user_marker);
+            mMap.addMarker(new MarkerOptions().position(userLocation).title("Me").icon(icon)).showInfoWindow();
 //            mMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
 //            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(userLocation, 15);
             //mMap.animateCamera(cameraUpdate);
 
-            LatLng friendLocation = new LatLng(sharedLocation.getTrack().get(0).getLatitude(), sharedLocation.getTrack().get(0).getLongitude());
-            mMap.addMarker(new MarkerOptions().position(friendLocation).title("Friend")).showInfoWindow();
+            LatLng friendLocation = new LatLng(sharedLocations1.get(0).getTrack().get(0).getLatitude(), sharedLocations1.get(0).getTrack().get(0).getLongitude());
+            BitmapDescriptor iconFrnd = BitmapDescriptorFactory.fromResource(R.drawable.ic_user_friend_marker);
+            mMap.addMarker(new MarkerOptions().position(friendLocation).title("Friend").icon(iconFrnd)).showInfoWindow();
 //            mMap.moveCamera(CameraUpdateFactory.newLatLng(friendLocation));
 //            CameraUpdate cameraUpdateFrnd = CameraUpdateFactory.newLatLngZoom(friendLocation, 15);
             //mMap.animateCamera(cameraUpdateFrnd);
@@ -390,8 +395,10 @@ public class TrackAndShareLocationActivity extends FragmentActivity implements O
 
             p1 = new LatLng(location.getLatitude(), location.getLongitude() );
 
-        } catch (IOException ex) {
-
+        }catch (IndexOutOfBoundsException i){
+            i.printStackTrace();
+        }
+        catch (IOException ex) {
             ex.printStackTrace();
         }
 

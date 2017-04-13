@@ -14,18 +14,10 @@ public class SharedLocation implements Parcelable{
     private User user_id;
     private ArrayList<Tracking> track;
 
+
     protected SharedLocation(Parcel in) {
         location_sharing_id = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(location_sharing_id);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        track = in.createTypedArrayList(Tracking.CREATOR);
     }
 
     public static final Creator<SharedLocation> CREATOR = new Creator<SharedLocation>() {
@@ -62,5 +54,16 @@ public class SharedLocation implements Parcelable{
 
     public void setTrack(ArrayList<Tracking> track) {
         this.track = track;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(location_sharing_id);
+        dest.writeTypedList(track);
     }
 }

@@ -37,9 +37,9 @@ public class FireMsgService extends FirebaseMessagingService {
         // Create Notification
         String requestedFrom=remoteMessage.getData().get("mobile_number");
 
-        if (!TextUtils.isEmpty(remoteMessage.getData().get("duration"))) {
+        //if (!TextUtils.isEmpty(remoteMessage.getData().get("duration"))) {
             duration = remoteMessage.getData().get("duration");
-        }
+        //}
         String location_sharing_id=remoteMessage.getData().get("location_sharing_id");
 
 
@@ -59,11 +59,12 @@ public class FireMsgService extends FirebaseMessagingService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1410, notificationBuilder.build());
 
-
-        PushData pushData=new PushData(requestedFrom,Long.parseLong(duration),location_sharing_id);
-        Intent startService=new Intent(this,PushMessageService.class);
-        startService.putExtra(AishaConstants.EXTRA_PUSH_DATA,pushData);
-        startService(startService);
+        if (!TextUtils.isEmpty(duration)) {
+            PushData pushData = new PushData(requestedFrom, Long.parseLong(duration), location_sharing_id);
+            Intent startService = new Intent(this, PushMessageService.class);
+            startService.putExtra(AishaConstants.EXTRA_PUSH_DATA, pushData);
+            startService(startService);
+        }
 
     }
     public String getNameFromNumber(String mobile) {

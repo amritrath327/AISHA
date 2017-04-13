@@ -1,10 +1,13 @@
 package com.cybercareinfoways.aisha.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Nutan on 31-03-2017.
  */
 
-public class User {
+public class User implements Parcelable{
     private String dial_code;
     private String mobile_number;
     private String name;
@@ -12,6 +15,44 @@ public class User {
     private int verified;
     private String date;
     private String image;
+
+    protected User(Parcel in) {
+        dial_code = in.readString();
+        mobile_number = in.readString();
+        name = in.readString();
+        otp = in.readString();
+        verified = in.readInt();
+        date = in.readString();
+        image = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(dial_code);
+        dest.writeString(mobile_number);
+        dest.writeString(name);
+        dest.writeString(otp);
+        dest.writeInt(verified);
+        dest.writeString(date);
+        dest.writeString(image);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getDial_code() {
         return dial_code;

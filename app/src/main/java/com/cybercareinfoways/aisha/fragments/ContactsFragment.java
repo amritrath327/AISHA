@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.NewContactsActivity;
+import com.cybercareinfoways.aisha.activities.TrackAndShareLocationActivity;
 import com.cybercareinfoways.aisha.adapters.UserAvailableAdapter;
 import com.cybercareinfoways.aisha.model.Contacts;
 import com.cybercareinfoways.aisha.model.LoationRequest;
@@ -112,7 +113,7 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         }else{
             getAllContacts();
         }
-        requestReceiver=new RequestReceiver();
+        requestReceiver = new RequestReceiver();
         return v;
     }
     private void showAvailableContacts() {
@@ -121,9 +122,9 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
         for (int i=0;i<1;i++) {
             Contacts contacts = new Contacts();
-            //contacts.setMobile(contactDataList.get(i).getMobile());
+            contacts.setMobile(contactDataList.get(i).getMobile());
             //contacts.setMobile("9668452233");
-            contacts.setMobile("7504891196");
+            //contacts.setMobile("7504891196");
             contactses.add(contacts);
         }
         userRequest.setContacts(contactses);
@@ -317,7 +318,7 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
                     durationDilog.dismiss();
                 }
                 if (t instanceof SocketTimeoutException){
-                    Toast.makeText(getActivity(), "Conection timeout", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Connection timeout", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Log.v("ERROR",t.getMessage());
@@ -342,6 +343,8 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
                         Intent intent = new Intent(getActivity(), ShareLocaionService.class);
                         intent.putExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST,loationRequest);
                         getActivity().startService(intent);
+                        Intent intent1 = new Intent(getActivity(), TrackAndShareLocationActivity.class);
+                        startActivity(intent1);
                         userAvailableAdapter.onRequestAccepted(loationRequest);
 
                     }else {
