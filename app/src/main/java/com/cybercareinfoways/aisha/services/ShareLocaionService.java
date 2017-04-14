@@ -47,7 +47,7 @@ public class ShareLocaionService extends IntentService implements GoogleApiClien
     Handler handler;
     private long duration;
     private static final int REQUEST_ERROR_RESOLVE = 1001;
-    private static final long UPDATE_ITERVAL = 10000;
+    private static final long UPDATE_ITERVAL = 5000;
     private static final long FASTEST_UPDATE_INTERVAL = UPDATE_ITERVAL / 2;
     private static final int LOCATION_CODE = 100;
     private static final int RESOLUTION_CODE = 199;
