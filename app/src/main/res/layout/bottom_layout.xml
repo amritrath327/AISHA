@@ -51,6 +51,7 @@
         android:textSize="20sp"
         android:textColor="@color/colorPrimaryDark"
         android:textStyle="bold|italic"
+        android:gravity="center"
         android:layout_marginTop="10dp"/>
     <TextView
         android:layout_width="match_parent"

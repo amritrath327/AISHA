@@ -132,7 +132,7 @@ public class ZipprDetilsActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
         LatLng zipprLocation = new LatLng(zipprListData.getLatitude(), zipprListData.getLongitude());
-        googleMap.addMarker(new MarkerOptions().position(zipprLocation).title(addressString));
+        googleMap.addMarker(new MarkerOptions().position(zipprLocation).title(addressString)).showInfoWindow();
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(zipprLocation));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }

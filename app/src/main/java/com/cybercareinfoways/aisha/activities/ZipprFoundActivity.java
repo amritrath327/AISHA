@@ -135,7 +135,7 @@ public class ZipprFoundActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         LatLng zipprLocation = new LatLng(zipprCodeResponse.getLatitude(), zipprCodeResponse.getLongitude());
-        googleMap.addMarker(new MarkerOptions().position(zipprLocation).title(addressString));
+        googleMap.addMarker(new MarkerOptions().position(zipprLocation).title(addressString)).showInfoWindow();
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(zipprLocation));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
