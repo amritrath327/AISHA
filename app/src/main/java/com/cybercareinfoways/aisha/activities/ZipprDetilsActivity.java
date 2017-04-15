@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -55,10 +56,25 @@ public class ZipprDetilsActivity extends AppCompatActivity implements OnMapReady
     String appLinkUrl;
     private String addressString;
     private ZipprListData zipprListData;
+    private BottomSheetBehavior<View> behavior;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zippr_found);
+        View bottomSheet = findViewById(R.id.bottom_sheet);
+        behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setPeekHeight(120);
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                // React to state change
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // React to dragging events
+            }
+        });
         FacebookSdk.sdkInitialize(getApplicationContext());
         Uri targetUrl = AppLinks.getTargetUrlFromInboundIntent(this, getIntent());
         if (targetUrl != null) {
@@ -118,7 +134,7 @@ public class ZipprDetilsActivity extends AppCompatActivity implements OnMapReady
         LatLng zipprLocation = new LatLng(zipprListData.getLatitude(), zipprListData.getLongitude());
         googleMap.addMarker(new MarkerOptions().position(zipprLocation).title(addressString));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(zipprLocation));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }
 
     @Override

@@ -141,7 +141,10 @@
 
         <activity
             android:name=".activities.TrackAndShareLocationActivity"
-            android:label="@string/title_activity_track_and_share_location"></activity>
+            android:label="@string/title_activity_track_and_share_location" />
+        <activity
+            android:name=".activities.ZipprMapActivity"
+            android:label="@string/title_activity_zippr_map"></activity>
     </application>
 
 </manifest>

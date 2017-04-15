@@ -155,7 +155,7 @@ public class ZipprActivity extends AppCompatActivity {
         zippr.setUser_id(userId);
         zippr.setLatitude(LocationStorage.getInstance().getLocation().getLatitude());
         zippr.setLongitude(LocationStorage.getInstance().getLocation().getLongitude());
-        zippr.setAddress_name("");
+        zippr.setAddress_name("India");
         if (!TextUtils.isEmpty(etPlaceNmaeString) && !TextUtils.isEmpty(etHnoPlotNoString) && !TextUtils.isEmpty(etStreetNameString) && !TextUtils.isEmpty(etCityString) && !TextUtils.isEmpty(etStateString) && !TextUtils.isEmpty(etPincodeString)){
             zippr.setAddress_type(2);
         }else {

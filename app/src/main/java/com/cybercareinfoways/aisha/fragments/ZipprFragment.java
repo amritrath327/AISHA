@@ -32,6 +32,7 @@ import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.activities.SearchAishaCodeActivity;
 import com.cybercareinfoways.aisha.activities.ZipprActivity;
 import com.cybercareinfoways.aisha.activities.ZipprDetilsActivity;
+import com.cybercareinfoways.aisha.activities.ZipprMapActivity;
 import com.cybercareinfoways.aisha.adapters.ZipprLisdtAdapter;
 import com.cybercareinfoways.aisha.model.ZipprListData;
 import com.cybercareinfoways.helpers.AishaConstants;
@@ -56,6 +57,7 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,7 +123,9 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
             @Override
             public void onClick(View v) {
                 if (LocationStorage.getInstance()!=null && LocationStorage.getInstance().getLocation()!=null) {
-                    Intent intent = new Intent(getActivity(), ZipprActivity.class);
+//                    Intent intent = new Intent(getActivity(), ZipprActivity.class);
+//                    startActivity(intent);
+                    Intent intent = new Intent(getActivity(), ZipprMapActivity.class);
                     startActivity(intent);
                 }else {
                     Toast.makeText(getActivity(), "Location not found", Toast.LENGTH_SHORT).show();
@@ -154,6 +158,7 @@ public class ZipprFragment extends Fragment implements GoogleApiClient.Connectio
                     if (response.body().getStatus()==1){
                         if (response.body().getList_zipper()!=null && response.body().getList_zipper().size()>0) {
                             zipprListDatas.addAll(response.body().getList_zipper());
+                            Collections.reverse(zipprListDatas);
                             zipprLisdtAdapter=new ZipprLisdtAdapter(getActivity(),zipprListDatas,ZipprFragment.this);
                             rcvZippr.setAdapter(zipprLisdtAdapter);
                             txtNoZippr.setVisibility(View.GONE);
