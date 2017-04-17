@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -17,6 +18,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -57,7 +60,8 @@ public class ZipprMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(LocationStorage.getInstance().getLocation().getLatitude(), LocationStorage.getInstance().getLocation().getLongitude());
-         Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).title("Your Location").snippet("Hold and drag to edit"));
+        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_large_marker);
+        Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).icon(icon).title("Your Location").snippet("Hold and drag to edit"));
         marker.showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(sydney, 15);
@@ -83,19 +87,30 @@ public class ZipprMapActivity extends AppCompatActivity implements OnMapReadyCal
                 LocationStorage.getInstance().setLocation(temp);
             }
         });
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                Intent intent = new Intent(ZipprMapActivity.this, ZipprActivity.class);
-                startActivity(intent);
-                return true;
-            }
-        });
+//        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//            @Override
+//            public boolean onMarkerClick(Marker marker) {
+//
+//                return true;
+//            }
+//        });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.okay_menu,menu);
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
          super.onOptionsItemSelected(item);
+        if (item.getItemId()==R.id.item_okay){
+            Intent intent = new Intent(ZipprMapActivity.this, ZipprActivity.class);
+            startActivity(intent);
+            return true;
+        }
         if (item.getItemId()==android.R.id.home){
             finish();
             return true;
