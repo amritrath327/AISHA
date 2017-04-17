@@ -57,7 +57,8 @@ public class ZipprMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(LocationStorage.getInstance().getLocation().getLatitude(), LocationStorage.getInstance().getLocation().getLongitude());
-         Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).title(""));
+         Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).title("Your Location").snippet("Hold and drag to edit"));
+        marker.showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(sydney, 15);
         mMap.animateCamera(cameraUpdate);
