@@ -1,5 +1,6 @@
 package com.cybercareinfoways.helpers;
 
+import com.cybercareinfoways.aisha.model.HistoryResponse;
 import com.cybercareinfoways.aisha.model.ZipprCodeResponse;
 import com.cybercareinfoways.aisha.model.UserRequest;
 import com.cybercareinfoways.aisha.model.UserResponse;
@@ -23,7 +24,6 @@ import com.cybercareinfoways.webapihelpers.ZipprResponse;
 
 import java.util.Map;
 
-import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
@@ -66,4 +66,7 @@ public interface WebApi {
     Call<SharingResponse> getUpadatedLocationFromervice(@Body Map<String,String> object);
     @POST("meeting_point")
     Call<Result> sendMeetingPoint(@Body Map<String,String> object);
+
+    @POST("history")
+    Call<HistoryResponse> getHiostry(@Body SimpleWebRequest simpleWebRequest);
 }

@@ -69,12 +69,12 @@ import retrofit2.Response;
  * Created by YELOWFLASH on 03/11/2017.
  */
 
-public class ContactsFragment extends Fragment implements UserClickListener,UserAvailableAdapter.LocationAcceptListner{
+public class ContactsFragment extends Fragment implements UserClickListener, UserAvailableAdapter.LocationAcceptListner {
     private static final int READCONTACT_CODE = 201;
     ProgressDialog dilogAvailableUser;
     private ArrayList<Contacts> cotactList, contactDataList;
     private String userId;
-    private Call<UserResponse>userResponseCall;
+    private Call<UserResponse> userResponseCall;
     private WebApi webApi;
     private ArrayList<UserData> userAvilableList;
     private RecyclerView rcvAvailableUsers;
@@ -96,31 +96,32 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.contact_fragment, container, false);
         ButterKnife.bind(this, v);
-        userId=AishaUtilities.getSharedPreffUserid(getActivity());
-        webApi=AishaUtilities.setupRetrofit();
+        userId = AishaUtilities.getSharedPreffUserid(getActivity());
+        webApi = AishaUtilities.setupRetrofit();
         contactDataList = new ArrayList<>();
         userAvilableList = new ArrayList<>();
-        rcvAvailableUsers=(RecyclerView)v.findViewById(R.id.rcvAvailableUsers);
+        rcvAvailableUsers = (RecyclerView) v.findViewById(R.id.rcvAvailableUsers);
         rcvAvailableUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rcvAvailableUsers.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
-        txtNocontact=(TextView)v.findViewById(R.id.txtNocontact);
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+        rcvAvailableUsers.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
+        txtNocontact = (TextView) v.findViewById(R.id.txtNocontact);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (AishaUtilities.checkPermission(Manifest.permission.READ_CONTACTS, getActivity())) {
                 getAllContacts();
-            }else{
-                AishaUtilities.requestPermission(this,new String[]{Manifest.permission.READ_CONTACTS},READCONTACT_CODE);
+            } else {
+                AishaUtilities.requestPermission(this, new String[]{Manifest.permission.READ_CONTACTS}, READCONTACT_CODE);
             }
-        }else{
+        } else {
             getAllContacts();
         }
         requestReceiver = new RequestReceiver();
         return v;
     }
+
     private void showAvailableContacts() {
-        UserRequest userRequest=new UserRequest();
+        UserRequest userRequest = new UserRequest();
         userRequest.setUser_id(userId);
-        ArrayList<Contacts>contactses=new ArrayList<>(contactDataList.size());
-        for (int i=0;i<contactDataList.size();i++) {
+        ArrayList<Contacts> contactses = new ArrayList<>(contactDataList.size());
+        for (int i = 0; i < contactDataList.size(); i++) {
             Contacts contacts = new Contacts();
             contacts.setMobile(contactDataList.get(i).getMobile());
             //contacts.setMobile("9668452233");
@@ -132,39 +133,39 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         userResponseCall.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (dilogAvailableUser.isShowing()){
+                if (dilogAvailableUser.isShowing()) {
                     dilogAvailableUser.dismiss();
                 }
-                if (response.isSuccessful()){
-                    if (response.body().getStatus()==1){
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
                         userAvilableList.addAll(response.body().getContacts());
-                        if (userAvilableList!=null && userAvilableList.size()>0){
-                            userAvailableAdapter  = new UserAvailableAdapter(getActivity(),userAvilableList);
+                        if (userAvilableList != null && userAvilableList.size() > 0) {
+                            userAvailableAdapter = new UserAvailableAdapter(getActivity(), userAvilableList);
                             rcvAvailableUsers.setAdapter(userAvailableAdapter);
                             userAvailableAdapter.setListner(ContactsFragment.this);
                             userAvailableAdapter.setOnUSerClicked(ContactsFragment.this);
                             txtNocontact.setVisibility(View.GONE);
-                        }else {
+                        } else {
                             txtNocontact.setVisibility(View.VISIBLE);
                         }
-                    }else {
+                    } else {
                         txtNocontact.setVisibility(View.VISIBLE);
                         txtNocontact.setText(response.body().getMessage());
                     }
-                }else {
-                    Toast.makeText(getActivity(),"Please try agaiin",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Please try again", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<UserResponse> call, Throwable t) {
-                if (dilogAvailableUser.isShowing()){
+                if (dilogAvailableUser.isShowing()) {
                     dilogAvailableUser.dismiss();
                 }
-                if (t instanceof SocketTimeoutException){
-                    Toast.makeText(getActivity(), AishaConstants.CONNECYION_TIME_OUT,Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.v(AishaConstants.EXTRA_ERROR,t.getMessage());
+                if (t instanceof SocketTimeoutException) {
+                    Toast.makeText(getActivity(), AishaConstants.CONNECYION_TIME_OUT, Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.v(AishaConstants.EXTRA_ERROR, t.getMessage());
                 }
             }
         });
@@ -173,10 +174,11 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
     private void getAllContacts() {
         new ContactTask(ContactsFragment.this).execute();
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==READCONTACT_CODE && grantResults[0]== PackageManager.PERMISSION_GRANTED){
+        if (requestCode == READCONTACT_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             getAllContacts();
         }
     }
@@ -211,9 +213,9 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
     @Override
     public void onUserCliked(View view, final int position) {
         final Dialog durationDilog = new Dialog(getActivity());
-        WindowManager.LayoutParams params=durationDilog.getWindow().getAttributes();
-        params.height= ViewGroup.LayoutParams.WRAP_CONTENT;
-        params.width=ViewGroup.LayoutParams.MATCH_PARENT;
+        WindowManager.LayoutParams params = durationDilog.getWindow().getAttributes();
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
         durationDilog.getWindow().setAttributes(params);
         durationDilog.setContentView(R.layout.duration_layout);
         final RadioGroup durationGroup = (RadioGroup) durationDilog.findViewById(R.id.duration_group);
@@ -281,9 +283,9 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
             @Override
             public void onClick(View v) {
                 if (rbtn_Fifteen.isChecked() || rbtn_thirty.isChecked() || rbtn_fortyFive.isChecked() || rbtn_Sixty.isChecked()
-                        || rbtn_2hr.isChecked() || rbtn_3hr.isChecked() || rbtn_4hr.isChecked() || rbtn_5hr.isChecked() ){
-                    requestLocation(durationTime,durationDilog,position);
-                }else {
+                        || rbtn_2hr.isChecked() || rbtn_3hr.isChecked() || rbtn_4hr.isChecked() || rbtn_5hr.isChecked()) {
+                    requestLocation(durationTime, durationDilog, position);
+                } else {
                     Toast.makeText(getActivity(), "Please select time duration", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -292,21 +294,21 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
 
     private void requestLocation(int durationTime, final Dialog durationDilog, int pos) {
         UserData userData = userAvilableList.get(pos);
-        Map<String,String> mapSendLocation = new HashMap<>(3);
-        mapSendLocation.put(AishaConstants.USERID,userId);
-        mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER,userData.getMobile());
-        mapSendLocation.put(AishaConstants.EXTRA_DURATION,""+durationTime);
+        Map<String, String> mapSendLocation = new HashMap<>(3);
+        mapSendLocation.put(AishaConstants.USERID, userId);
+        mapSendLocation.put(AishaConstants.EXTRA_MOBILE_NUMBER, userData.getMobile());
+        mapSendLocation.put(AishaConstants.EXTRA_DURATION, "" + durationTime);
         locationSharingResponseCall = webApi.sendLocationRequest(mapSendLocation);
         locationSharingResponseCall.enqueue(new Callback<LocationRequestResponse>() {
             @Override
             public void onResponse(Call<LocationRequestResponse> call, Response<LocationRequestResponse> response) {
-                if (response.isSuccessful()){
-                    if (durationDilog.isShowing()){
+                if (response.isSuccessful()) {
+                    if (durationDilog.isShowing()) {
                         durationDilog.dismiss();
                     }
-                    if (response.body().getStatus()==1){
+                    if (response.body().getStatus() == 1) {
                         Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         Toast.makeText(getActivity(), "Please tryagain.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -314,14 +316,13 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
 
             @Override
             public void onFailure(Call<LocationRequestResponse> call, Throwable t) {
-                if (durationDilog.isShowing()){
+                if (durationDilog.isShowing()) {
                     durationDilog.dismiss();
                 }
-                if (t instanceof SocketTimeoutException){
+                if (t instanceof SocketTimeoutException) {
                     Toast.makeText(getActivity(), "Connection timeout", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Log.v("ERROR",t.getMessage());
+                } else {
+                    Log.v("ERROR", t.getMessage());
                 }
             }
         });
@@ -329,38 +330,38 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
 
     @Override
     public void onAccept(final LoationRequest loationRequest) {
-        Map<String,String> mapAcceptOrReject = new HashMap<>(3);
-        mapAcceptOrReject.put(AishaConstants.USERID,userId);
-        mapAcceptOrReject.put(AishaConstants.EXTRA_LOCATION_SHARING_ID,loationRequest.getLocation_sharing_id());
-        mapAcceptOrReject.put(AishaConstants.EXTRA_ACKOLEDGEMENT,"1");
+        Map<String, String> mapAcceptOrReject = new HashMap<>(3);
+        mapAcceptOrReject.put(AishaConstants.USERID, userId);
+        mapAcceptOrReject.put(AishaConstants.EXTRA_LOCATION_SHARING_ID, loationRequest.getLocation_sharing_id());
+        mapAcceptOrReject.put(AishaConstants.EXTRA_ACKOLEDGEMENT, "1");
         acceptRejectResponseCall = webApi.acceptORreject(mapAcceptOrReject);
         acceptRejectResponseCall.enqueue(new Callback<AcceptRejectResponse>() {
             @Override
             public void onResponse(Call<AcceptRejectResponse> call, Response<AcceptRejectResponse> response) {
-                if (response.isSuccessful()){
-                    if (response.body().getStatus()==1){
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
                         Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getActivity(), ShareLocaionService.class);
-                        intent.putExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST,loationRequest);
+                        intent.putExtra(AishaConstants.EXTRA_SEND_LOCATION_REQUEST, loationRequest);
                         getActivity().startService(intent);
                         Intent intent1 = new Intent(getActivity(), TrackAndShareLocationActivity.class);
                         startActivity(intent1);
                         userAvailableAdapter.onRequestAccepted(loationRequest);
 
-                    }else {
+                    } else {
                         Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                } else {
                     Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<AcceptRejectResponse> call, Throwable t) {
-                if (t instanceof SocketTimeoutException){
+                if (t instanceof SocketTimeoutException) {
                     Toast.makeText(getActivity(), AishaConstants.CONNECYION_TIME_OUT, Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.e(AishaConstants.EXTRA_ERROR,t.getMessage());
+                } else {
+                    Log.e(AishaConstants.EXTRA_ERROR, t.getMessage());
                 }
             }
         });
@@ -368,42 +369,44 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
 
     @Override
     public void onReject(LoationRequest loationRequest) {
-        Map<String,String> mapAcceptOrReject = new HashMap<>(3);
-        mapAcceptOrReject.put(AishaConstants.USERID,userId);
-        mapAcceptOrReject.put(AishaConstants.EXTRA_LOCATION_SHARING_ID,loationRequest.getLocation_sharing_id());
-        mapAcceptOrReject.put(AishaConstants.EXTRA_ACKOLEDGEMENT,"0");
+        Map<String, String> mapAcceptOrReject = new HashMap<>(3);
+        mapAcceptOrReject.put(AishaConstants.USERID, userId);
+        mapAcceptOrReject.put(AishaConstants.EXTRA_LOCATION_SHARING_ID, loationRequest.getLocation_sharing_id());
+        mapAcceptOrReject.put(AishaConstants.EXTRA_ACKOLEDGEMENT, "0");
         acceptRejectResponseCall = webApi.acceptORreject(mapAcceptOrReject);
         acceptRejectResponseCall.enqueue(new Callback<AcceptRejectResponse>() {
             @Override
             public void onResponse(Call<AcceptRejectResponse> call, Response<AcceptRejectResponse> response) {
-                if (response.isSuccessful()){
-                    if (response.body().getStatus()==1){
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 1) {
                         Toast.makeText(getActivity(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
-                    }else {
+                    } else {
                         Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                } else {
                     Toast.makeText(getActivity(), AishaConstants.TRYAGAIN, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<AcceptRejectResponse> call, Throwable t) {
-                if (t instanceof SocketTimeoutException){
+                if (t instanceof SocketTimeoutException) {
                     Toast.makeText(getActivity(), AishaConstants.CONNECYION_TIME_OUT, Toast.LENGTH_SHORT).show();
-                }else {
-                    Log.e(AishaConstants.EXTRA_ERROR,t.getMessage());
+                } else {
+                    Log.e(AishaConstants.EXTRA_ERROR, t.getMessage());
                 }
             }
         });
     }
 
-    public class ContactTask extends AsyncTask<Void,Void,ArrayList<Contacts>>{
+    public class ContactTask extends AsyncTask<Void, Void, ArrayList<Contacts>> {
         private WeakReference<ContactsFragment> contactsFragmentWeakReference;
-        public ContactTask(ContactsFragment contactsFragment){
+
+        public ContactTask(ContactsFragment contactsFragment) {
             contactsFragmentWeakReference = new WeakReference<ContactsFragment>(contactsFragment);
         }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -419,7 +422,7 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
             Contacts contacts;
             ContentResolver contentResolver = getActivity().getContentResolver();
             Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
-            if (cursor!=null && cursor.getCount() > 0) {
+            if (cursor != null && cursor.getCount() > 0) {
                 while (cursor.moveToNext()) {
                     int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
                     if (hasPhoneNumber > 0) {
@@ -435,13 +438,13 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
                                 ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                                 new String[]{id},
                                 null);
-                        if (phoneCursor!=null && phoneCursor.getCount()>0) {
+                        if (phoneCursor != null && phoneCursor.getCount() > 0) {
                             if (phoneCursor.moveToNext()) {
                                 String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                                 contacts.setMobile(phoneNumber);
                             }
                         }
-                        if (phoneCursor!=null) {
+                        if (phoneCursor != null) {
                             phoneCursor.close();
                         }
 
@@ -450,12 +453,12 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
                                 null,
                                 ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
                                 new String[]{id}, null);
-                        if (emailCursor!=null && emailCursor.getCount()>0) {
+                        if (emailCursor != null && emailCursor.getCount() > 0) {
                             while (emailCursor.moveToNext()) {
                                 String emailId = emailCursor.getString(emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
                             }
                         }
-                        if (emailCursor!=null){
+                        if (emailCursor != null) {
                             emailCursor.close();
                         }
                         cotactList.add(contacts);
@@ -468,8 +471,10 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
         @Override
         protected void onPostExecute(ArrayList<Contacts> contactses) {
             super.onPostExecute(contactses);
-            if (contactsFragmentWeakReference.get()!=null) {
+            if (contactsFragmentWeakReference.get() != null) {
                 if (contactses != null && contactses.size() > 0) {
+                    Log.i("Count", contactses.size() + "");
+
                     contactDataList.addAll(contactses);
                     if (AishaUtilities.isConnectingToInternet(getActivity())) {
                         showAvailableContacts();
@@ -481,13 +486,13 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.home_menu,menu);
+        inflater.inflate(R.menu.home_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-         super.onOptionsItemSelected(item);
+        super.onOptionsItemSelected(item);
         if (item.getItemId() == R.id.item_new) {
             Intent intent = new Intent(getActivity(), NewContactsActivity.class);
             startActivity(intent);
@@ -499,9 +504,9 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
     @Override
     public void onResume() {
         super.onResume();
-        IntentFilter filter=new IntentFilter();
+        IntentFilter filter = new IntentFilter();
         filter.addAction(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION);
-        (getActivity()).registerReceiver(requestReceiver,filter);
+        (getActivity()).registerReceiver(requestReceiver, filter);
     }
 
     @Override
@@ -511,15 +516,15 @@ public class ContactsFragment extends Fragment implements UserClickListener,User
 
     }
 
-    class RequestReceiver extends BroadcastReceiver{
+    class RequestReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION)){
-              //String requestFrom=intent.getStringExtra(AishaConstants.EXTRA_MOBILE);
+            if (intent.getAction().equals(AishaConstants.EXTRA_ACTION_REQUEST_SHARE_LOCAION)) {
+                //String requestFrom=intent.getStringExtra(AishaConstants.EXTRA_MOBILE);
                 //com.cybercareinfoways.aisha.model.LoationRequest request=intent.getParcelableExtra(AishaConstants.EXTRA_USER_REQUEST_LOCATION);
-                PushData data=intent.getParcelableExtra(AishaConstants.EXTRA_PUSH_DATA);
-                com.cybercareinfoways.aisha.model.LoationRequest request=new LoationRequest(data.getRequestedFrom(),data.getDuration(),data.getLocation_sharing_id());
+                PushData data = intent.getParcelableExtra(AishaConstants.EXTRA_PUSH_DATA);
+                com.cybercareinfoways.aisha.model.LoationRequest request = new LoationRequest(data.getRequestedFrom(), data.getDuration(), data.getLocation_sharing_id());
                 userAvailableAdapter.addRequest(request);
                 abortBroadcast();
             }

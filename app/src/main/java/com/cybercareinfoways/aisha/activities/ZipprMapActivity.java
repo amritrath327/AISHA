@@ -35,7 +35,7 @@ public class ZipprMapActivity extends AppCompatActivity implements OnMapReadyCal
         setContentView(R.layout.activity_zippr_map);
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("You are here!");
+        getSupportActionBar().setTitle("Confirm Your Location");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Toast.makeText(this, "Change your Location by Dragging the Marker", Toast.LENGTH_SHORT).show();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -60,8 +60,8 @@ public class ZipprMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(LocationStorage.getInstance().getLocation().getLatitude(), LocationStorage.getInstance().getLocation().getLongitude());
-        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_large_marker);
-        Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).icon(icon).title("Your Location").snippet("Hold and drag to edit"));
+//        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_large_marker);
+        Marker marker = mMap.addMarker(new MarkerOptions().position(sydney).title("Current Location").snippet("Hold and drag to your desired location"));
         marker.showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(sydney, 15);

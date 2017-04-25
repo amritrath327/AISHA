@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.cybercareinfoways.aisha.R;
 import com.cybercareinfoways.aisha.fragments.ContactsFragment;
+import com.cybercareinfoways.aisha.fragments.HistoryFragment;
 import com.cybercareinfoways.aisha.fragments.ProfileFragment;
 import com.cybercareinfoways.aisha.fragments.ZipprFragment;
 import com.cybercareinfoways.aisha.services.SyncTokenService;
@@ -79,12 +80,15 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         fragmentManager = getSupportFragmentManager();
 
         sendTokenServiceCall();
+        fragmentManager.beginTransaction().replace(R.id.content, new HistoryFragment(), "History")
+                .commit();
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.history:
-
+                        fragmentManager.beginTransaction().replace(R.id.content, new HistoryFragment(), "History")
+                                .commit();
                         break;
                     case R.id.contacts:
                         fragmentManager.beginTransaction().replace(R.id.content, new ContactsFragment(), "ContactFrag")
@@ -129,7 +133,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-//    @Override
+    //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        super.onCreateOptionsMenu(menu);
 //        getMenuInflater().inflate(R.menu.home_menu, menu);
@@ -186,6 +190,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             //LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
         }
     }
+
     private void getMyCuurentLocation() {
         Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
         if (location != null) {
@@ -226,6 +231,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
 
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -242,7 +248,7 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
             }
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
-        if (requestCode==REQUEST_ERROR_RESOLVE && resultCode==RESULT_OK){
+        if (requestCode == REQUEST_ERROR_RESOLVE && resultCode == RESULT_OK) {
             buildGoogleApiClient();
             googleApiClient.connect();
             Log.i("TAG", "Connected in OnACtivityResult");
@@ -252,10 +258,11 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==LOCATION_CODE && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+        if (requestCode == LOCATION_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             getMyCuurentLocation();
         }
     }
+
     @Override
     protected void onStart() {
         super.onStart();
